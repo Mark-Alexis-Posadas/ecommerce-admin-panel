@@ -1,59 +1,72 @@
-// App.tsx
 import { Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import Navbar from "./components/Navbar";
+
+import AdminLayout from "./layouts/AdminLayout";
+import AuthLayout from "./layouts/AuthLayout";
 
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Users from "./pages/Users";
 
-// Layout component wrapping Sidebar + Navbar
-const Layout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Navbar />
-        <div className="p-6">{children}</div>
-      </div>
-    </div>
-  );
-};
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 const App = () => {
   return (
     <Routes>
+      {/* AUTH */}
+      <Route
+        path="/login"
+        element={
+          <AuthLayout>
+            <Login />
+          </AuthLayout>
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          <AuthLayout>
+            <Signup />
+          </AuthLayout>
+        }
+      />
+
+      {/* ADMIN */}
       <Route
         path="/"
         element={
-          <Layout>
+          <AdminLayout>
             <Dashboard />
-          </Layout>
+          </AdminLayout>
         }
       />
+
       <Route
         path="/products"
         element={
-          <Layout>
+          <AdminLayout>
             <Products />
-          </Layout>
+          </AdminLayout>
         }
       />
+
       <Route
         path="/orders"
         element={
-          <Layout>
+          <AdminLayout>
             <Orders />
-          </Layout>
+          </AdminLayout>
         }
       />
+
       <Route
         path="/users"
         element={
-          <Layout>
+          <AdminLayout>
             <Users />
-          </Layout>
+          </AdminLayout>
         }
       />
     </Routes>
