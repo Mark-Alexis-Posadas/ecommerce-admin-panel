@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import AdminLayout from "./layouts/AdminLayout";
 import AuthLayout from "./layouts/AuthLayout";
@@ -13,63 +14,66 @@ import Signup from "./pages/Signup";
 
 const App = () => {
   return (
-    <Routes>
-      {/* AUTH */}
-      <Route
-        path="/login"
-        element={
-          <AuthLayout>
-            <Login />
-          </AuthLayout>
-        }
-      />
+    <>
+      <Toaster position="top-right" />
+      <Routes>
+        {/* AUTH */}
+        <Route
+          path="/login"
+          element={
+            <AuthLayout>
+              <Login />
+            </AuthLayout>
+          }
+        />
 
-      <Route
-        path="/signup"
-        element={
-          <AuthLayout>
-            <Signup />
-          </AuthLayout>
-        }
-      />
+        <Route
+          path="/signup"
+          element={
+            <AuthLayout>
+              <Signup />
+            </AuthLayout>
+          }
+        />
 
-      {/* ADMIN */}
-      <Route
-        path="/"
-        element={
-          <AdminLayout>
-            <Dashboard />
-          </AdminLayout>
-        }
-      />
+        {/* ADMIN */}
+        <Route
+          path="/"
+          element={
+            <AdminLayout>
+              <Dashboard />
+            </AdminLayout>
+          }
+        />
 
-      <Route
-        path="/products"
-        element={
-          <AdminLayout>
-            <Products />
-          </AdminLayout>
-        }
-      />
+        <Route
+          path="/products"
+          element={
+            <AdminLayout>
+              <Products />
+            </AdminLayout>
+          }
+        />
 
-      <Route
-        path="/orders"
-        element={
-          <AdminLayout>
-            <Orders />
-          </AdminLayout>
-        }
-      />
+        <Route
+          path="/orders"
+          element={
+            <AdminLayout>
+              <Orders />
+            </AdminLayout>
+          }
+        />
 
-      <Route
-        path="/users"
-        element={
-          <AdminLayout>
-            <Users />
-          </AdminLayout>
-        }
-      />
-    </Routes>
+        <Route
+          path="/users"
+          element={
+            <AdminLayout>
+              <Users />
+            </AdminLayout>
+          }
+        />
+      </Routes>
+    </>
   );
 };
 
