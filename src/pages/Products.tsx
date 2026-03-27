@@ -3,6 +3,9 @@ import axios from "axios";
 import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Pagination from "../components/ui/Pagination";
+import ViewModal from "../components/products/ViewModal";
+import EditModal from "../components/products/EditModal";
+import DeleteModal from "../components/products/DeleteModal";
 interface Product {
   _id: string;
   title: string;
@@ -17,6 +20,11 @@ const Products = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [form, setForm] = useState({
     title: "",
     price: "",
@@ -65,6 +73,67 @@ const Products = () => {
       toast.success("Product added 🚀");
     } catch (error) {
       toast.error("Failed to create product");
+    }
+  };
+
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setForm({
+      title: product.title,
+      price: String(product.price),
+      image: product.image || "",
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedProduct) return;
+
+    try {
+      const { data } = await axios.put(
+        `http://localhost:5000/api/products/${selectedProduct._id}`,
+        {
+          title: form.title,
+          price: Number(form.price),
+          image: form.image,
+        },
+      );
+
+      setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
+
+      setShowEditModal(false);
+      toast.success("Product updated ✏️");
+    } catch {
+      toast.error("Failed to update product");
+    }
+  };
+
+  const handleView = (product: Product) => {
+    setSelectedProduct(product);
+    setShowViewModal(true);
+  };
+
+  const handleDeleteClick = (product: Product) => {
+    setSelectedProduct(product);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedProduct) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/products/${selectedProduct._id}`,
+      );
+
+      setProducts((prev) => prev.filter((p) => p._id !== selectedProduct._id));
+
+      setShowDeleteModal(false);
+      toast.success("Product deleted 🗑️");
+    } catch {
+      toast.error("Failed to delete");
     }
   };
 
@@ -133,17 +202,26 @@ const Products = () => {
                 <td className="p-4">
                   <div className="flex items-center gap-3">
                     {/* View */}
-                    <button className="p-2 rounded-lg hover:bg-blue-500/20 text-blue-400">
+                    <button
+                      onClick={() => handleView(p)}
+                      className="p-2 rounded-lg hover:bg-blue-500/20 text-blue-400"
+                    >
                       <Eye size={18} />
                     </button>
 
                     {/* Edit */}
-                    <button className="p-2 rounded-lg hover:bg-yellow-500/20 text-yellow-400">
+                    <button
+                      onClick={() => handleEdit(p)}
+                      className="p-2 rounded-lg hover:bg-yellow-500/20 text-yellow-400"
+                    >
                       <Pencil size={18} />
                     </button>
 
                     {/* Delete */}
-                    <button className="p-2 rounded-lg hover:bg-red-500/20 text-red-400">
+                    <button
+                      onClick={() => handleDeleteClick(p)}
+                      className="p-2 rounded-lg hover:bg-red-500/20 text-red-400"
+                    >
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -207,6 +285,30 @@ const Products = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {showViewModal && selectedProduct && (
+        <ViewModal
+          selectedProduct={selectedProduct}
+          setShowViewModal={setShowViewModal}
+        />
+      )}
+
+      {showEditModal && (
+        <EditModal
+          handleUpdate={handleUpdate}
+          form={form}
+          setForm={setForm}
+          setShowEditModal={setShowEditModal}
+        />
+      )}
+
+      {showDeleteModal && selectedProduct && (
+        <DeleteModal
+          handleDelete={handleDelete}
+          selectedProduct={selectedProduct}
+          setShowDeleteModal={setShowDeleteModal}
+        />
       )}
     </div>
   );
