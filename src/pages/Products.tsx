@@ -39,8 +39,12 @@ const Products = () => {
       );
       setProducts(data.data);
       setTotalPages(data.totalPages);
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -71,8 +75,12 @@ const Products = () => {
       setForm({ title: "", price: "", image: "" });
 
       toast.success("Product added 🚀");
-    } catch (error) {
-      toast.error("Failed to create product");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -105,8 +113,12 @@ const Products = () => {
 
       setShowEditModal(false);
       toast.success("Product updated ✏️");
-    } catch {
-      toast.error("Failed to update product");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -132,8 +144,12 @@ const Products = () => {
 
       setShowDeleteModal(false);
       toast.success("Product deleted 🗑️");
-    } catch {
-      toast.error("Failed to delete");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 

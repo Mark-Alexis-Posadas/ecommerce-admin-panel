@@ -63,8 +63,12 @@ const Signup = () => {
 
       // redirect
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Signup failed");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

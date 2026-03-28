@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Users as UsersIcon } from "lucide-react";
-
+import toast from "react-hot-toast";
 interface User {
   _id: string;
   name: string;
@@ -18,8 +18,12 @@ const Users = () => {
       try {
         const { data } = await axios.get("http://localhost:5000/api/users");
         setUsers(data);
-      } catch (error) {
-        console.error(error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       } finally {
         setLoading(false);
       }
