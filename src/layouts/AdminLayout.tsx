@@ -1,17 +1,23 @@
+import { Flex, Box, useColorModeValue } from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+  const bg = useColorModeValue("gray.50", "gray.900");
+  const contentBg = useColorModeValue("white", "gray.800");
+
   return (
-    <div className="flex bg-[#0a0a12] min-h-screen">
+    <Flex minH="100vh" bg={bg}>
       <Sidebar />
 
-      <div className="flex-1 flex flex-col">
+      <Flex flex="1" direction="column">
         <Navbar />
 
-        <div className="p-6 text-white">{children}</div>
-      </div>
-    </div>
+        <Box p={6} bg={contentBg} minH="calc(100vh - 64px)">
+          {children}
+        </Box>
+      </Flex>
+    </Flex>
   );
 };
 

@@ -1,8 +1,13 @@
+import { Box, VStack, Text, Flex, useColorModeValue } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Package, ShoppingCart, Users } from "lucide-react";
 
 const Sidebar = () => {
   const location = useLocation();
+
+  const bg = useColorModeValue("white", "gray.900");
+  const border = useColorModeValue("gray.200", "whiteAlpha.200");
+  const hoverBg = useColorModeValue("gray.100", "whiteAlpha.100");
 
   const menu = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -12,34 +17,43 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 h-screen bg-[#0f0f1a] text-white flex flex-col p-5 border-r border-white/10">
-      <h1 className="text-2xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+    <Box
+      w="250px"
+      h="100vh"
+      bg={bg}
+      borderRight="1px solid"
+      borderColor={border}
+      p={5}
+    >
+      <Text fontSize="2xl" fontWeight="bold" mb={8} color="purple.500">
         Admin Panel
-      </h1>
+      </Text>
 
-      <nav className="flex flex-col gap-2">
+      <VStack align="stretch" spacing={2}>
         {menu.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
 
           return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                ${
-                  isActive
-                    ? "bg-gradient-to-r from-purple-600 to-purple-800 shadow-lg"
-                    : "hover:bg-white/5"
-                }`}
-            >
-              <Icon size={18} />
-              {item.name}
+            <Link key={item.name} to={item.path}>
+              <Flex
+                align="center"
+                gap={3}
+                p={3}
+                borderRadius="lg"
+                bg={isActive ? "purple.500" : "transparent"}
+                color={isActive ? "white" : "inherit"}
+                _hover={{ bg: isActive ? "purple.600" : hoverBg }}
+                transition="0.2s"
+              >
+                <Icon size={18} />
+                {item.name}
+              </Flex>
             </Link>
           );
         })}
-      </nav>
-    </div>
+      </VStack>
+    </Box>
   );
 };
 
