@@ -12,7 +12,20 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-const ViewModal = ({ isOpen, onClose, selectedProduct }) => {
+interface Product {
+  _id: string;
+  title: string;
+  price: number;
+  image?: string;
+  createdAt: string;
+}
+interface Prop {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedProduct: Product | null;
+}
+
+const ViewModal = ({ isOpen, onClose, selectedProduct }: Prop) => {
   const bg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "whiteAlpha.300");
   return (

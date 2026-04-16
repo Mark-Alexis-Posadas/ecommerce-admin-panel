@@ -30,6 +30,12 @@ interface Product {
   createdAt: string;
 }
 
+interface FormType {
+  title: string;
+  price: string;
+  image: string;
+}
+
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,7 +46,7 @@ const Products = () => {
   const [activeModal, setActiveModal] = useState<
     "view" | "edit" | "delete" | null
   >(null);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormType>({
     title: "",
     price: "",
     image: "",

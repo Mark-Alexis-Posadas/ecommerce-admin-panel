@@ -11,7 +11,21 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate }) => {
+type FormType = {
+  title: string;
+  price: string;
+  image: string;
+};
+
+interface Prop {
+  isOpen: boolean;
+  onClose: () => void;
+  form: FormType;
+  handleUpdate: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  setForm: React.Dispatch<React.SetStateAction<FormType>>;
+}
+
+const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate }: Prop) => {
   const bg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "whiteAlpha.300");
   return (
