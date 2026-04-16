@@ -9,18 +9,17 @@ import {
   Image,
   Text,
   VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 const ViewModal = ({ isOpen, onClose, selectedProduct }) => {
+  const bg = useColorModeValue("white", "gray.800");
+  const border = useColorModeValue("gray.200", "whiteAlpha.300");
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay bg="blackAlpha.600" />
 
-      <ModalContent
-        bg="#0f0f1a"
-        border="1px solid"
-        borderColor="whiteAlpha.200"
-      >
+      <ModalContent bg={bg} borderColor={border} border="1px solid">
         <ModalHeader>Product Details</ModalHeader>
 
         <ModalBody>

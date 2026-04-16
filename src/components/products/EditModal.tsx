@@ -8,18 +8,17 @@ import {
   Button,
   Input,
   VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate }) => {
+  const bg = useColorModeValue("white", "gray.800");
+  const border = useColorModeValue("gray.200", "whiteAlpha.300");
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay bg="blackAlpha.600" />
 
-      <ModalContent
-        bg="#0f0f1a"
-        border="1px solid"
-        borderColor="whiteAlpha.200"
-      >
+      <ModalContent bg={bg} border="1px solid" borderColor={border}>
         <ModalHeader>Edit Product</ModalHeader>
 
         <ModalBody>

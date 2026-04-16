@@ -7,18 +7,17 @@ import {
   ModalFooter,
   Button,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 const DeleteModal = ({ isOpen, onClose, selectedProduct, handleDelete }) => {
+  const bg = useColorModeValue("white", "gray.800");
+  const border = useColorModeValue("gray.200", "whiteAlpha.300");
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay bg="blackAlpha.600" />
 
-      <ModalContent
-        bg="#0f0f1a"
-        border="1px solid"
-        borderColor="whiteAlpha.200"
-      >
+      <ModalContent bg={bg} borderColor={border} border="1px solid">
         <ModalHeader color="red.400">Delete Product</ModalHeader>
 
         <ModalBody>

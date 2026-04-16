@@ -100,6 +100,7 @@ const Products = () => {
   };
 
   const handleEdit = (product: Product) => {
+    setActiveModal("edit");
     setSelectedProduct(product);
     setForm({
       title: product.title,
@@ -287,13 +288,7 @@ const Products = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Box
-            bg={useColorModeValue("white", "gray.800")}
-            p={6}
-            borderRadius="xl"
-            w="full"
-            maxW="md"
-          >
+          <Box bg={bg} p={6} borderRadius="xl" w="full" maxW="md">
             <Heading size="md" mb={4}>
               Add Product
             </Heading>
