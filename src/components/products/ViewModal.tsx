@@ -1,35 +1,64 @@
-const ViewModal = ({ selectedProduct, setShowViewModal }) => {
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Image,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+
+const ViewModal = ({ isOpen, onClose, selectedProduct }) => {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
-      <div className="bg-[#0f0f1a] p-6 rounded-2xl w-full max-w-md border border-white/10">
-        <h2 className="text-xl font-bold mb-4">Product Details</h2>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay bg="blackAlpha.600" />
 
-        {selectedProduct.image && (
-          <img
-            src={selectedProduct.image}
-            className="w-full h-40 object-cover rounded-lg mb-4"
-          />
-        )}
+      <ModalContent
+        bg="#0f0f1a"
+        border="1px solid"
+        borderColor="whiteAlpha.200"
+      >
+        <ModalHeader>Product Details</ModalHeader>
 
-        <p>
-          <b>Title:</b> {selectedProduct.title}
-        </p>
-        <p>
-          <b>Price:</b> ₱{selectedProduct.price}
-        </p>
-        <p>
-          <b>Created:</b>{" "}
-          {new Date(selectedProduct.createdAt).toLocaleDateString()}
-        </p>
+        <ModalBody>
+          <VStack spacing={3} align="start">
+            {selectedProduct?.image && (
+              <Image
+                src={selectedProduct.image}
+                w="100%"
+                h="160px"
+                objectFit="cover"
+                borderRadius="lg"
+              />
+            )}
 
-        <button
-          onClick={() => setShowViewModal(false)}
-          className="mt-4 w-full py-2 bg-gray-700 rounded-lg"
-        >
-          Close
-        </button>
-      </div>
-    </div>
+            <Text>
+              <b>Title:</b> {selectedProduct?.title}
+            </Text>
+
+            <Text>
+              <b>Price:</b> ₱{selectedProduct?.price}
+            </Text>
+
+            <Text>
+              <b>Created:</b>{" "}
+              {selectedProduct?.createdAt
+                ? new Date(selectedProduct.createdAt).toLocaleDateString()
+                : ""}
+            </Text>
+          </VStack>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button w="100%" onClick={onClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

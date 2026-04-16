@@ -1,30 +1,43 @@
-const DeleteModal = ({ selectedProduct, handleDelete, setShowDeleteModal }) => {
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Text,
+} from "@chakra-ui/react";
+
+const DeleteModal = ({ isOpen, onClose, selectedProduct, handleDelete }) => {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
-      <div className="bg-[#0f0f1a] p-6 rounded-2xl w-full max-w-sm border border-white/10">
-        <h2 className="text-lg font-bold mb-4 text-red-400">Delete Product</h2>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay bg="blackAlpha.600" />
 
-        <p className="mb-4">
-          Are you sure you want to delete <b>{selectedProduct.title}</b>?
-        </p>
+      <ModalContent
+        bg="#0f0f1a"
+        border="1px solid"
+        borderColor="whiteAlpha.200"
+      >
+        <ModalHeader color="red.400">Delete Product</ModalHeader>
 
-        <div className="flex gap-2">
-          <button
-            onClick={handleDelete}
-            className="flex-1 py-2 bg-red-600 rounded-lg"
-          >
+        <ModalBody>
+          <Text>
+            Are you sure you want to delete <b>{selectedProduct?.title}</b>?
+          </Text>
+        </ModalBody>
+
+        <ModalFooter gap={2}>
+          <Button colorScheme="red" flex={1} onClick={handleDelete}>
             Delete
-          </button>
+          </Button>
 
-          <button
-            onClick={() => setShowDeleteModal(false)}
-            className="flex-1 py-2 bg-gray-700 rounded-lg"
-          >
+          <Button variant="ghost" flex={1} onClick={onClose}>
             Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

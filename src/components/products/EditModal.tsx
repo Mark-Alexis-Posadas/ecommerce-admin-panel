@@ -1,45 +1,61 @@
-const EditModal = ({ handleUpdate, form, setForm, setShowEditModal }) => {
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Input,
+  VStack,
+} from "@chakra-ui/react";
+
+const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate }) => {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
-      <div className="bg-[#0f0f1a] p-6 rounded-2xl w-full max-w-md border border-white/10">
-        <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay bg="blackAlpha.600" />
 
-        <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-          <input
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="p-3 bg-white/5 border border-white/10 rounded-lg"
-          />
+      <ModalContent
+        bg="#0f0f1a"
+        border="1px solid"
+        borderColor="whiteAlpha.200"
+      >
+        <ModalHeader>Edit Product</ModalHeader>
 
-          <input
-            type="number"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            className="p-3 bg-white/5 border border-white/10 rounded-lg"
-          />
+        <ModalBody>
+          <VStack spacing={4}>
+            <Input
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="Title"
+            />
 
-          <input
-            value={form.image}
-            onChange={(e) => setForm({ ...form, image: e.target.value })}
-            className="p-3 bg-white/5 border border-white/10 rounded-lg"
-          />
+            <Input
+              type="number"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              placeholder="Price"
+            />
 
-          <div className="flex gap-2">
-            <button className="flex-1 py-2 bg-yellow-600 rounded-lg">
-              Update
-            </button>
+            <Input
+              value={form.image}
+              onChange={(e) => setForm({ ...form, image: e.target.value })}
+              placeholder="Image URL"
+            />
+          </VStack>
+        </ModalBody>
 
-            <button
-              type="button"
-              onClick={() => setShowEditModal(false)}
-              className="flex-1 py-2 bg-gray-700 rounded-lg"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <ModalFooter gap={2}>
+          <Button colorScheme="yellow" flex={1} onClick={handleUpdate}>
+            Update
+          </Button>
+
+          <Button variant="ghost" flex={1} onClick={onClose}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

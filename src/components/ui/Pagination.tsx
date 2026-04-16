@@ -1,4 +1,5 @@
 import React from "react";
+import { HStack, Button } from "@chakra-ui/react";
 
 type PaginationProps = {
   currentPage: number;
@@ -14,40 +15,40 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex justify-center mt-10 gap-2 flex-wrap">
+    <HStack justify="center" mt={10} spacing={2} wrap="wrap">
       {/* Prev */}
-      <button
+      <Button
+        size="sm"
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="px-3 py-1 rounded-lg bg-white/10 text-white disabled:opacity-50"
+        isDisabled={currentPage === 1}
+        variant="outline"
       >
         Prev
-      </button>
+      </Button>
 
       {/* Page Numbers */}
       {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-        <button
+        <Button
           key={page}
+          size="sm"
           onClick={() => onPageChange(page)}
-          className={`px-3 py-1 rounded-lg ${
-            currentPage === page
-              ? "bg-indigo-600 text-white"
-              : "bg-white/10 text-gray-300"
-          }`}
+          colorScheme={currentPage === page ? "indigo" : "gray"}
+          variant={currentPage === page ? "solid" : "outline"}
         >
           {page}
-        </button>
+        </Button>
       ))}
 
       {/* Next */}
-      <button
+      <Button
+        size="sm"
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="px-3 py-1 rounded-lg bg-white/10 text-white disabled:opacity-50"
+        isDisabled={currentPage === totalPages}
+        variant="outline"
       >
         Next
-      </button>
-    </div>
+      </Button>
+    </HStack>
   );
 };
 

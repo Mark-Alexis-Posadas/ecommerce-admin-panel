@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-
+import { SimpleGrid, Box, Text, Heading, Flex } from "@chakra-ui/react";
+import { Package, ShoppingCart, Users } from "lucide-react";
 type Product = {
   _id: string;
   title: string;
@@ -31,22 +32,64 @@ const Dashboard = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="grid grid-cols-3 gap-6">
-      <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur shadow">
-        <h3 className="text-gray-400">Total Products</h3>
-        <p className="text-2xl font-bold mt-2">{stats.length}</p>
-      </div>
+    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+      {/* PRODUCTS */}
+      <Box
+        p={6}
+        borderRadius="xl"
+        bg="gray.800"
+        boxShadow="lg"
+        border="1px solid"
+        borderColor="whiteAlpha.200"
+      >
+        <Flex align="center" justify="space-between">
+          <Text color="gray.400">Total Products</Text>
+          <Package size={20} />
+        </Flex>
 
-      <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur shadow">
-        <h3 className="text-gray-400">Orders</h3>
-        <p className="text-2xl font-bold mt-2">{stats.length}</p>
-      </div>
+        <Heading mt={3} size="lg">
+          {stats.length}
+        </Heading>
+      </Box>
 
-      <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur shadow">
-        <h3 className="text-gray-400">Users</h3>
-        <p className="text-2xl font-bold mt-2">{stats.length}</p>
-      </div>
-    </div>
+      {/* ORDERS */}
+      <Box
+        p={6}
+        borderRadius="xl"
+        bg="gray.800"
+        boxShadow="lg"
+        border="1px solid"
+        borderColor="whiteAlpha.200"
+      >
+        <Flex align="center" justify="space-between">
+          <Text color="gray.400">Orders</Text>
+          <ShoppingCart size={20} />
+        </Flex>
+
+        <Heading mt={3} size="lg">
+          {stats.length}
+        </Heading>
+      </Box>
+
+      {/* USERS */}
+      <Box
+        p={6}
+        borderRadius="xl"
+        bg="gray.800"
+        boxShadow="lg"
+        border="1px solid"
+        borderColor="whiteAlpha.200"
+      >
+        <Flex align="center" justify="space-between">
+          <Text color="gray.400">Users</Text>
+          <Users size={20} />
+        </Flex>
+
+        <Heading mt={3} size="lg">
+          {stats.length}
+        </Heading>
+      </Box>
+    </SimpleGrid>
   );
 };
 
