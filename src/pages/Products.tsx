@@ -41,9 +41,9 @@ interface FormType {
 }
 
 const Products = () => {
-  const { products, setProducts, loading, error } = useProducts();
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const { products, setProducts, loading, error, page, setPage, meta } =
+    useProducts();
+
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeModal, setActiveModal] = useState<
@@ -70,7 +70,7 @@ const Products = () => {
         image: form.image,
       });
 
-      setProducts([data, ...products]);
+      setProducts((prev) => [data, ...prev]);
       setShowModal(false);
 
       setForm({ title: "", price: "", image: "" });
@@ -162,13 +162,6 @@ const Products = () => {
   const tableHead = useColorModeValue("gray.100", "gray.700");
   const rowHoverBg = useColorModeValue("gray.50", "gray.700");
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return products.slice(startIndex, startIndex + itemsPerPage);
-  }, [products, currentPage]);
-
   if (loading) {
     return (
       <Center h="100vh">
@@ -223,7 +216,7 @@ const Products = () => {
           </Thead>
 
           <Tbody>
-            {paginatedProducts.map((p) => (
+            {products.map((p) => (
               <Tr key={p._id} _hover={{ bg: rowHoverBg }}>
                 {/* PRODUCT */}
                 <Td>
@@ -280,9 +273,9 @@ const Products = () => {
         {/* PAGINATION */}
         <Box p={4}>
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
+            currentPage={meta?.page || 1}
+            totalPages={meta?.totalPages || 1}
+            onPageChange={(p) => setPage(p)}
           />
         </Box>
       </Box>
