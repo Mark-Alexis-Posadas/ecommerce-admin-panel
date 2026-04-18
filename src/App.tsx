@@ -9,6 +9,12 @@ import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Users from "./pages/Users";
 
+// ✅ NEW PAGES
+import Categories from "./pages/Categories";
+import Coupons from "./pages/Coupons";
+import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -16,6 +22,7 @@ const App = () => {
   return (
     <>
       <Toaster position="top-right" />
+
       <Routes>
         {/* AUTH */}
         <Route
@@ -69,6 +76,43 @@ const App = () => {
           element={
             <AdminLayout>
               <Users />
+            </AdminLayout>
+          }
+        />
+
+        {/* ✅ NEW ROUTES */}
+        <Route
+          path="/categories"
+          element={
+            <AdminLayout>
+              <Categories />
+            </AdminLayout>
+          }
+        />
+
+        <Route
+          path="/coupons"
+          element={
+            <AdminLayout>
+              <Coupons />
+            </AdminLayout>
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            <AdminLayout>
+              <Analytics />
+            </AdminLayout>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <AdminLayout>
+              <Settings />
             </AdminLayout>
           }
         />
