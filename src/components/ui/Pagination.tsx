@@ -32,8 +32,12 @@ const Pagination: React.FC<PaginationProps> = ({
           key={page}
           size="sm"
           onClick={() => onPageChange(page)}
-          colorScheme={currentPage === page ? "indigo" : "gray"}
-          variant={currentPage === page ? "solid" : "outline"}
+          bg={currentPage === page ? "purple.500" : "transparent"}
+          color={currentPage === page ? "white" : "gray.400"}
+          _hover={{
+            bg: currentPage === page ? "purple.600" : "gray.100",
+          }}
+          variant="outline"
         >
           {page}
         </Button>
