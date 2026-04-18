@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import axios from "axios";
 import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import {
@@ -15,13 +15,17 @@ import {
   Image,
   IconButton,
   Spinner,
+  Center,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+
 import toast from "react-hot-toast";
 import Pagination from "../components/ui/Pagination";
 import ViewModal from "../components/products/ViewModal";
 import EditModal from "../components/products/EditModal";
 import DeleteModal from "../components/products/DeleteModal";
+import useProducts from "../hooks/useProducts";
 interface Product {
   _id: string;
   title: string;
@@ -37,11 +41,10 @@ interface FormType {
 }
 
 const Products = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { products, setProducts, loading, error } = useProducts();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeModal, setActiveModal] = useState<
     "view" | "edit" | "delete" | null
@@ -51,29 +54,6 @@ const Products = () => {
     price: "",
     image: "",
   });
-
-  // FETCH
-  const fetchProducts = async () => {
-    try {
-      const { data } = await axios.get(
-        `http://localhost:5000/api/products?page=${page}&limit=5`,
-      );
-      setProducts(data.data);
-      setTotalPages(data.totalPages);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [page]);
 
   // CREATE PRODUCT
   const handleCreate = async (e: React.FormEvent) => {
@@ -181,8 +161,31 @@ const Products = () => {
   const bg = useColorModeValue("white", "gray.800");
   const tableHead = useColorModeValue("gray.100", "gray.700");
   const rowHoverBg = useColorModeValue("gray.50", "gray.700");
-  if (loading) return <Spinner size="xl" />;
 
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return products.slice(startIndex, startIndex + itemsPerPage);
+  }, [products, currentPage]);
+
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center h="100vh">
+        <Text color="red.500" fontSize="lg" textAlign="center">
+          {error}
+        </Text>
+      </Center>
+    );
+  }
   return (
     <Box>
       {/* HEADER */}
@@ -220,7 +223,7 @@ const Products = () => {
           </Thead>
 
           <Tbody>
-            {products.map((p) => (
+            {paginatedProducts.map((p) => (
               <Tr key={p._id} _hover={{ bg: rowHoverBg }}>
                 {/* PRODUCT */}
                 <Td>
@@ -277,9 +280,9 @@ const Products = () => {
         {/* PAGINATION */}
         <Box p={4}>
           <Pagination
-            currentPage={page}
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={(p) => setPage(p)}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         </Box>
       </Box>
