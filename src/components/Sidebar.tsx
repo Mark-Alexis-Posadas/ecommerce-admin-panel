@@ -63,11 +63,14 @@ const Sidebar = () => {
     <Box
       w="260px"
       h="100vh"
+      position="fixed"
       bg={bg}
       borderRight="1px solid"
       borderColor={border}
       p={5}
       overflowY="auto"
+      top="0"
+      left="0"
     >
       {/* LOGO */}
       <Text fontSize="2xl" fontWeight="bold" mb={6} color="purple.500">
