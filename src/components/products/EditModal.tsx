@@ -14,6 +14,7 @@ import {
 type FormType = {
   title: string;
   price: string;
+  stock: string;
   image: string;
 };
 
@@ -48,6 +49,14 @@ const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate }: Prop) => {
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               placeholder="Price"
+            />
+
+            {/* 🔥 NEW */}
+            <Input
+              type="number"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              placeholder="Stock"
             />
 
             <Input

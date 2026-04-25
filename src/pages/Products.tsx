@@ -30,6 +30,7 @@ interface Product {
   _id: string;
   title: string;
   price: number;
+  stock: number;
   image?: string;
   createdAt: string;
 }
@@ -37,6 +38,7 @@ interface Product {
 interface FormType {
   title: string;
   price: string;
+  stock: string;
   image: string;
 }
 
@@ -52,6 +54,7 @@ const Products = () => {
   const [form, setForm] = useState<FormType>({
     title: "",
     price: "",
+    stock: "",
     image: "",
   });
 
@@ -67,13 +70,14 @@ const Products = () => {
       const { data } = await axios.post("http://localhost:5000/api/products", {
         title: form.title,
         price: Number(form.price),
+        stock: Number(form.stock) || 0,
         image: form.image,
       });
 
       setProducts((prev) => [data, ...prev]);
       setShowModal(false);
 
-      setForm({ title: "", price: "", image: "" });
+      setForm({ title: "", price: "", stock: "", image: "" });
 
       toast.success("Product added 🚀");
     } catch (error: unknown) {
@@ -91,6 +95,7 @@ const Products = () => {
     setForm({
       title: product.title,
       price: String(product.price),
+      stock: String(product.stock || 0),
       image: product.image || "",
     });
   };
@@ -106,6 +111,7 @@ const Products = () => {
         {
           title: form.title,
           price: Number(form.price),
+          stock: Number(form.stock),
           image: form.image,
         },
       );
@@ -210,6 +216,7 @@ const Products = () => {
             <Tr>
               <Th>Product</Th>
               <Th>Price</Th>
+              <Th>Stock</Th>
               <Th>Created</Th>
               <Th>Actions</Th>
             </Tr>
@@ -237,7 +244,12 @@ const Products = () => {
                 <Td color="purple.500" fontWeight="semibold">
                   ₱{Number(p.price || 0).toLocaleString()}
                 </Td>
-
+                <Td
+                  fontWeight="bold"
+                  color={p.stock === 0 ? "red.500" : "green.500"}
+                >
+                  {p.stock}
+                </Td>
                 {/* CREATED */}
                 <Td>{new Date(p.createdAt).toLocaleDateString()}</Td>
 
@@ -309,7 +321,12 @@ const Products = () => {
                   value={form.price}
                   onChange={(e) => setForm({ ...form, price: e.target.value })}
                 />
-
+                <input
+                  placeholder="Stock"
+                  type="number"
+                  value={form.stock}
+                  onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                />
                 <input
                   placeholder="Image URL"
                   value={form.image}
