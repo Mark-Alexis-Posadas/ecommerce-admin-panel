@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import {
@@ -26,6 +26,7 @@ import ViewModal from "../components/products/ViewModal";
 import EditModal from "../components/products/EditModal";
 import DeleteModal from "../components/products/DeleteModal";
 import useProducts from "../hooks/useProducts";
+import AddModal from "../components/products/AddModal";
 interface Product {
   _id: string;
   title: string;
@@ -294,62 +295,13 @@ const Products = () => {
 
       {/* MODAL (UNCHANGED LOGIC, Chakra style lang) */}
       {showModal && (
-        <Box
-          position="fixed"
-          inset={0}
-          bg="blackAlpha.600"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Box bg={bg} p={6} borderRadius="xl" w="full" maxW="md">
-            <Heading size="md" mb={4}>
-              Add Product
-            </Heading>
-
-            <form onSubmit={handleCreate}>
-              <Flex direction="column" gap={3}>
-                <input
-                  placeholder="Title"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                />
-
-                <input
-                  placeholder="Price"
-                  type="number"
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })}
-                />
-                <input
-                  placeholder="Stock"
-                  type="number"
-                  value={form.stock}
-                  onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                />
-                <input
-                  placeholder="Image URL"
-                  value={form.image}
-                  onChange={(e) => setForm({ ...form, image: e.target.value })}
-                />
-
-                <Flex gap={2} mt={2}>
-                  <Button type="submit" colorScheme="purple" flex={1}>
-                    Create
-                  </Button>
-
-                  <Button
-                    onClick={() => setShowModal(false)}
-                    flex={1}
-                    variant="outline"
-                  >
-                    Cancel
-                  </Button>
-                </Flex>
-              </Flex>
-            </form>
-          </Box>
-        </Box>
+        <AddModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          form={form}
+          setForm={setForm}
+          handleCreate={handleCreate}
+        />
       )}
 
       {/* KEEP YOUR MODALS */}
