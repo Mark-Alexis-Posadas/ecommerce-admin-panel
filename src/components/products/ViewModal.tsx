@@ -16,6 +16,7 @@ interface Product {
   _id: string;
   title: string;
   price: number;
+  stock: number;
   image?: string;
   createdAt: string;
 }
@@ -54,7 +55,9 @@ const ViewModal = ({ isOpen, onClose, selectedProduct }: Prop) => {
             <Text>
               <b>Price:</b> ₱{selectedProduct?.price}
             </Text>
-
+            <Text>
+              <b>Stock:</b> ₱{selectedProduct?.stock}
+            </Text>
             <Text>
               <b>Created:</b>{" "}
               {selectedProduct?.createdAt
