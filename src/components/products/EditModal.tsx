@@ -1,4 +1,6 @@
 import {
+  FormControl,
+  FormLabel,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -38,32 +40,43 @@ const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate }: Prop) => {
 
         <ModalBody>
           <VStack spacing={4}>
-            <Input
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Title"
-            />
+            <FormControl>
+              <FormLabel>Product Title</FormLabel>
+              <Input
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder="Title"
+              />
+            </FormControl>
 
-            <Input
-              type="number"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="Price"
-            />
+            <FormControl>
+              <FormLabel>Price (₱)</FormLabel>
+              <Input
+                type="number"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                placeholder="Enter price"
+              />
+            </FormControl>
 
-            {/* 🔥 NEW */}
-            <Input
-              type="number"
-              value={form.stock}
-              onChange={(e) => setForm({ ...form, stock: e.target.value })}
-              placeholder="Stock"
-            />
+            <FormControl>
+              <FormLabel>Stock</FormLabel>
+              <Input
+                type="number"
+                value={form.stock}
+                onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                placeholder="Enter stock quantity"
+              />
+            </FormControl>
 
-            <Input
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              placeholder="Image URL"
-            />
+            <FormControl>
+              <FormLabel>Image URL</FormLabel>
+              <Input
+                value={form.image}
+                onChange={(e) => setForm({ ...form, image: e.target.value })}
+                placeholder="https://..."
+              />
+            </FormControl>
           </VStack>
         </ModalBody>
 
