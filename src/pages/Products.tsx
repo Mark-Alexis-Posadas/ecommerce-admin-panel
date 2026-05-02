@@ -147,6 +147,7 @@ const Products = () => {
       setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
 
       toast.success("Product updated ✏️");
+      closeModal();
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
