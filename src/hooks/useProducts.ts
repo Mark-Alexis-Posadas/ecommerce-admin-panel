@@ -12,7 +12,17 @@ interface Meta {
   hasPrevPage: boolean;
 }
 
-const useProducts = () => {
+interface UseProductsParams {
+  search?: string;
+  sort?: string;
+  category?: string;
+}
+
+const useProducts = ({
+  search = "",
+  sort = "",
+  category = "",
+}: UseProductsParams = {}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
 
@@ -26,9 +36,15 @@ const useProducts = () => {
     try {
       setLoading(true);
 
-      const res = await fetch(
-        `${API_URL}/api/products?page=${page}&limit=${limit}`,
-      );
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+        search,
+        sort,
+        category,
+      });
+
+      const res = await fetch(`${API_URL}/api/products?${params}`);
 
       if (!res.ok) {
         throw new Error("Failed to fetch");
@@ -48,15 +64,13 @@ const useProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [page, limit]);
+  }, [page, limit, search, sort, category]);
 
   return {
     products,
     setProducts,
     loading,
     error,
-
-    // 🔥 NEW
     page,
     setPage,
     meta,

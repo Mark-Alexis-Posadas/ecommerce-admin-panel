@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import {
   Input,
@@ -46,15 +47,24 @@ interface FormType {
 }
 
 const Products = () => {
-  const { products, setProducts, loading, error, page, setPage, meta } =
-    useProducts();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState("none");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeModal, setActiveModal] = useState<
     "view" | "edit" | "delete" | null
   >(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("");
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category") || "";
+  const [localSearch, setLocalSearch] = useState("");
+  const { products, setProducts, loading, error, page, setPage, meta } =
+    useProducts({
+      search: searchQuery,
+      sort: sortOption,
+      category,
+    });
+
   const [form, setForm] = useState<FormType>({
     title: "",
     price: "",
@@ -62,28 +72,19 @@ const Products = () => {
     image: "",
   });
 
-  const filteredProducts = useMemo(() => {
-    let items = products;
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(localSearch); // Ito ang magti-trigger sa useProducts fetch
+      setPage(1);
+    }, 500); // Mag-antay ng 500ms matapos tumigil ang user sa pagtype
 
-    // 🔍 Search
-    items = items.filter((p) =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
+    return () => clearTimeout(handler);
+  }, [localSearch]);
 
-    // 🔽 Sort
-    if (sortOption === "low_to_high") {
-      items = [...items].sort((a, b) => a.price - b.price);
-    } else if (sortOption === "high_to_low") {
-      items = [...items].sort((a, b) => b.price - a.price);
-    } else if (sortOption === "latest") {
-      items = [...items].sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-    }
-
-    return items;
-  }, [products, searchQuery, sortOption]);
+  const handleSort = (value: string) => {
+    setSortOption(value);
+    setPage(1);
+  };
 
   // CREATE PRODUCT
   const handleCreate = async (e: React.FormEvent) => {
@@ -195,7 +196,7 @@ const Products = () => {
   const tableHead = useColorModeValue("gray.100", "gray.700");
   const rowHoverBg = useColorModeValue("gray.50", "gray.700");
 
-  if (loading) {
+  if (loading && products.length === 0) {
     return (
       <Center h="100vh">
         <Spinner size="xl" />
@@ -234,8 +235,8 @@ const Products = () => {
         {/* SEARCH */}
         <Input
           placeholder="Search products..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={localSearch} // Gamitin ang localSearch
+          onChange={(e) => setLocalSearch(e.target.value)}
           maxW="250px"
           bg="white"
           _dark={{ bg: "gray.700" }}
@@ -244,7 +245,7 @@ const Products = () => {
         {/* SORT */}
         <Select
           value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
+          onChange={(e) => handleSort(e.target.value)}
           maxW="200px"
           bg="white"
           _dark={{ bg: "gray.700" }}
@@ -276,7 +277,7 @@ const Products = () => {
           </Thead>
 
           <Tbody>
-            {filteredProducts.map((p) => (
+            {products.map((p) => (
               <Tr key={p._id} _hover={{ bg: rowHoverBg }}>
                 {/* PRODUCT */}
                 <Td>
