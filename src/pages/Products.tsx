@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import axios from "axios";
 import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import {
+  Input,
+  Select,
   Box,
   Flex,
   Heading,
@@ -46,7 +48,8 @@ interface FormType {
 const Products = () => {
   const { products, setProducts, loading, error, page, setPage, meta } =
     useProducts();
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("none");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeModal, setActiveModal] = useState<
@@ -58,6 +61,29 @@ const Products = () => {
     stock: "",
     image: "",
   });
+
+  const filteredProducts = useMemo(() => {
+    let items = products;
+
+    // 🔍 Search
+    items = items.filter((p) =>
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    // 🔽 Sort
+    if (sortOption === "low_to_high") {
+      items = [...items].sort((a, b) => a.price - b.price);
+    } else if (sortOption === "high_to_low") {
+      items = [...items].sort((a, b) => b.price - a.price);
+    } else if (sortOption === "latest") {
+      items = [...items].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+    }
+
+    return items;
+  }, [products, searchQuery, sortOption]);
 
   // CREATE PRODUCT
   const handleCreate = async (e: React.FormEvent) => {
@@ -204,6 +230,32 @@ const Products = () => {
         </Button>
       </Flex>
 
+      <Flex mb={4} gap={4} flexWrap="wrap">
+        {/* SEARCH */}
+        <Input
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          maxW="250px"
+          bg="white"
+          _dark={{ bg: "gray.700" }}
+        />
+
+        {/* SORT */}
+        <Select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          maxW="200px"
+          bg="white"
+          _dark={{ bg: "gray.700" }}
+        >
+          <option value="none">Sort</option>
+          <option value="low_to_high">Price: Low to High</option>
+          <option value="high_to_low">Price: High to Low</option>
+          <option value="latest">Latest</option>
+        </Select>
+      </Flex>
+
       {/* TABLE */}
       <Box
         bg={bg}
@@ -224,7 +276,7 @@ const Products = () => {
           </Thead>
 
           <Tbody>
-            {products.map((p) => (
+            {filteredProducts.map((p) => (
               <Tr key={p._id} _hover={{ bg: rowHoverBg }}>
                 {/* PRODUCT */}
                 <Td>
