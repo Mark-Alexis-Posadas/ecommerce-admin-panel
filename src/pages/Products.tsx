@@ -36,6 +36,7 @@ interface Product {
   price: number;
   stock: number;
   image?: string;
+  category: string;
   createdAt: string;
 }
 
@@ -44,6 +45,12 @@ interface FormType {
   price: string;
   stock: string;
   image: string;
+  category: string;
+}
+
+interface Category {
+  _id: string;
+  name: string;
 }
 
 const Products = () => {
@@ -58,19 +65,45 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category") || "";
   const [localSearch, setLocalSearch] = useState("");
-  const { products, setProducts, loading, error, page, setPage, meta } =
-    useProducts({
-      search: searchQuery,
-      sort: sortOption,
-      category,
-    });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const {
+    products,
+    setProducts,
+    loading,
+    error,
+    page,
+    setPage,
+    meta,
+    refetch,
+  } = useProducts({
+    search: searchQuery,
+    sort: sortOption,
+    category,
+  });
 
   const [form, setForm] = useState<FormType>({
     title: "",
     price: "",
     stock: "",
     image: "",
+    category: "",
   });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/products/categories",
+        );
+
+        setCategories(res.data.data);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -105,7 +138,7 @@ const Products = () => {
       setProducts((prev) => [data, ...prev]);
       setShowModal(false);
 
-      setForm({ title: "", price: "", stock: "", image: "" });
+      setForm({ title: "", price: "", stock: "", image: "", category: "" });
 
       toast.success("Product added 🚀");
     } catch (error: unknown) {
@@ -125,6 +158,7 @@ const Products = () => {
       price: String(product.price),
       stock: String(product.stock || 0),
       image: product.image || "",
+      category: product.category || "",
     });
   };
 
@@ -141,12 +175,14 @@ const Products = () => {
           price: Number(form.price),
           stock: Number(form.stock),
           image: form.image,
+          category: form.category,
         },
       );
 
       setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
 
       toast.success("Product updated ✏️");
+      await refetch();
       closeModal();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -272,6 +308,7 @@ const Products = () => {
               <Th>Product</Th>
               <Th>Price</Th>
               <Th>Stock</Th>
+              <Th>Categories</Th>
               <Th>Created</Th>
               <Th>Actions</Th>
             </Tr>
@@ -305,6 +342,7 @@ const Products = () => {
                 >
                   {p.stock}
                 </Td>
+                <Td fontWeight="bold">{p.category?.name || "No category"}</Td>
                 {/* CREATED */}
                 <Td>{new Date(p.createdAt).toLocaleDateString()}</Td>
 
@@ -372,6 +410,7 @@ const Products = () => {
         handleUpdate={handleUpdate}
         form={form}
         setForm={setForm}
+        categories={categories}
       />
 
       <DeleteModal
