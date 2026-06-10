@@ -22,6 +22,10 @@ import toast from "react-hot-toast";
 interface Category {
   _id: string;
   name: string;
+  slug: string;
+  description: string;
+  image: string;
+  isActive: boolean;
   createdAt: string;
 }
 
@@ -30,6 +34,11 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    image: "",
+  });
 
   const bg = useColorModeValue("white", "gray.800");
   const headBg = useColorModeValue("gray.100", "gray.700");
@@ -55,9 +64,10 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
-  // 🔥 POST CATEGORY
   const handleAddCategory = async () => {
-    if (!name) return toast.error("Category name required");
+    if (!form.name) {
+      return toast.error("Category name required");
+    }
 
     try {
       setSubmitting(true);
@@ -65,15 +75,19 @@ const Categories = () => {
       const { data } = await axios.post(
         "http://localhost:5000/api/categories",
         {
-          name,
+          ...form,
         },
       );
 
-      // update UI instantly
       setCategories((prev) => [data, ...prev]);
 
-      setName("");
-      toast.success("Category added 🚀");
+      setForm({
+        name: "",
+        description: "",
+        image: "",
+      });
+
+      toast.success("Category added");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to add category");
     } finally {
@@ -97,11 +111,23 @@ const Categories = () => {
       </Flex>
 
       {/* ADD CATEGORY */}
-      <Flex gap={2} mb={6}>
+      <Flex direction="column" gap={3} mb={6}>
         <Input
-          placeholder="New category..."
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="Category name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+
+        <Input
+          placeholder="Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+
+        <Input
+          placeholder="Image URL"
+          value={form.image}
+          onChange={(e) => setForm({ ...form, image: e.target.value })}
         />
 
         <Button
@@ -109,8 +135,9 @@ const Categories = () => {
           leftIcon={<Plus size={16} />}
           onClick={handleAddCategory}
           isLoading={submitting}
+          alignSelf="start"
         >
-          Add
+          Add Category
         </Button>
       </Flex>
 
@@ -119,7 +146,10 @@ const Categories = () => {
         <Table>
           <Thead bg={headBg}>
             <Tr>
+              <Th>Image</Th>
               <Th>Name</Th>
+              <Th>Description</Th>
+              <Th>Status</Th>
               <Th>Created</Th>
             </Tr>
           </Thead>
@@ -127,7 +157,36 @@ const Categories = () => {
           <Tbody>
             {categories.map((c) => (
               <Tr key={c._id}>
-                <Td>{c.name}</Td>
+                <Td>
+                  <img
+                    src={c.image || "https://via.placeholder.com/60"}
+                    alt={c.name}
+                    width={60}
+                    height={60}
+                    style={{
+                      borderRadius: 8,
+                      objectFit: "cover",
+                    }}
+                  />
+                </Td>
+
+                <Td fontWeight="bold">{c.name}</Td>
+
+                <Td maxW="300px">{c.description || "-"}</Td>
+
+                <Td>
+                  <Box
+                    px={2}
+                    py={1}
+                    borderRadius="md"
+                    bg={c.isActive ? "green.100" : "red.100"}
+                    color={c.isActive ? "green.700" : "red.700"}
+                    w="fit-content"
+                  >
+                    {c.isActive ? "Active" : "Inactive"}
+                  </Box>
+                </Td>
+
                 <Td>{new Date(c.createdAt).toLocaleDateString()}</Td>
               </Tr>
             ))}
