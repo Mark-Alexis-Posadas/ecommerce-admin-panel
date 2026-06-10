@@ -151,6 +151,7 @@ const Categories = () => {
               <Th>Description</Th>
               <Th>Status</Th>
               <Th>Created</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
 
@@ -188,6 +189,15 @@ const Categories = () => {
                 </Td>
 
                 <Td>{new Date(c.createdAt).toLocaleDateString()}</Td>
+                <Td>
+                  <Button size="sm" colorScheme="blue" mr={2}>
+                    Edit
+                  </Button>
+
+                  <Button size="sm" colorScheme="red">
+                    Delete
+                  </Button>
+                </Td>
               </Tr>
             ))}
           </Tbody>

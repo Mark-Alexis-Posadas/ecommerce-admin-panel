@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../services/products.services";
+import { api } from "../services/api.ts";
 import { useSearchParams } from "react-router-dom";
 import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import {
@@ -92,13 +97,10 @@ const Products = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/products/categories",
-        );
-
+        const res = await api.get("/api/products/categories");
         setCategories(res.data.data);
       } catch (err) {
-        console.error("Failed to fetch categories", err);
+        console.error(err);
       }
     };
 
@@ -119,7 +121,6 @@ const Products = () => {
     setPage(1);
   };
 
-  // CREATE PRODUCT
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -128,25 +129,28 @@ const Products = () => {
     }
 
     try {
-      const { data } = await axios.post("http://localhost:5000/api/products", {
+      const { data } = await createProduct({
         title: form.title,
         price: Number(form.price),
         stock: Number(form.stock) || 0,
         image: form.image,
+        category: form.category,
       });
 
       setProducts((prev) => [data, ...prev]);
       setShowModal(false);
 
-      setForm({ title: "", price: "", stock: "", image: "", category: "" });
+      setForm({
+        title: "",
+        price: "",
+        stock: "",
+        image: "",
+        category: "",
+      });
 
       toast.success("Product added 🚀");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed");
     }
   };
 
@@ -168,28 +172,21 @@ const Products = () => {
     if (!selectedProduct) return;
 
     try {
-      const { data } = await axios.put(
-        `http://localhost:5000/api/products/${selectedProduct._id}`,
-        {
-          title: form.title,
-          price: Number(form.price),
-          stock: Number(form.stock),
-          image: form.image,
-          category: form.category,
-        },
-      );
+      const { data } = await updateProduct(selectedProduct._id, {
+        title: form.title,
+        price: Number(form.price),
+        stock: Number(form.stock),
+        image: form.image,
+        category: form.category,
+      });
 
       setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
 
       toast.success("Product updated ✏️");
       await refetch();
       closeModal();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed");
     }
   };
 
@@ -208,19 +205,13 @@ const Products = () => {
     if (!selectedProduct) return;
 
     try {
-      await axios.delete(
-        `http://localhost:5000/api/products/${selectedProduct._id}`,
-      );
+      await deleteProduct(selectedProduct._id);
 
       setProducts((prev) => prev.filter((p) => p._id !== selectedProduct._id));
 
       toast.success("Product deleted 🗑️");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed");
     }
   };
 
