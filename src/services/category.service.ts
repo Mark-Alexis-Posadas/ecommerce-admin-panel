@@ -1,4 +1,5 @@
 import { api } from "./api.ts";
+import type { CategoryPayload } from "../types/category.ts";
 
 // GET ALL CATEGORIES
 export const getCategories = async () => {
@@ -6,12 +7,12 @@ export const getCategories = async () => {
 };
 
 // CREATE CATEGORY
-export const createCategory = async (data: any) => {
+export const createCategory = async (data: CategoryPayload) => {
   return api.post("/api/categories", data);
 };
 
 // UPDATE CATEGORY
-export const updateCategory = async (id: string, data: any) => {
+export const updateCategory = async (id: string, data: CategoryPayload) => {
   return api.put(`/api/categories/${id}`, data);
 };
 

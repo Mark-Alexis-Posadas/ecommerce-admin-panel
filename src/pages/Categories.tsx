@@ -1,6 +1,18 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState, useRef } from "react";
 import {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "../services/category.service.ts";
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
   Box,
   Flex,
   Heading,
@@ -31,8 +43,20 @@ interface Category {
 
 const Categories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
+
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure();
+
+  const cancelRef = useRef(null);
+
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -47,12 +71,8 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-
-      const { data } = await axios.get(
-        "http://localhost:5000/api/products/categories",
-      );
-
-      setCategories(data.data);
+      const { data } = await getCategories();
+      setCategories(data);
     } catch (error) {
       toast.error("Failed to fetch categories");
     } finally {
@@ -72,12 +92,7 @@ const Categories = () => {
     try {
       setSubmitting(true);
 
-      const { data } = await axios.post(
-        "http://localhost:5000/api/categories",
-        {
-          ...form,
-        },
-      );
+      const { data } = await createCategory(form);
 
       setCategories((prev) => [data, ...prev]);
 
@@ -92,6 +107,57 @@ const Categories = () => {
       toast.error(error.response?.data?.message || "Failed to add category");
     } finally {
       setSubmitting(false);
+    }
+  };
+  const handleEditClick = (category: Category) => {
+    setIsEditMode(true);
+
+    setForm({
+      _id: category._id,
+      name: category.name,
+      description: category.description,
+      image: category.image,
+    });
+    const handleUpdate = async () => {
+      try {
+        const { data } = await updateCategory(form._id, {
+          name: form.name,
+          description: form.description,
+          image: form.image,
+        });
+
+        setCategories((prev) =>
+          prev.map((c) => (c._id === data._id ? data : c)),
+        );
+
+        toast.success("Category updated");
+        setIsEditMode(false);
+
+        setForm({
+          _id: "",
+          name: "",
+          description: "",
+          image: "",
+        });
+      } catch (error: any) {
+        toast.error("Update failed");
+      }
+    };
+  };
+  const handleDelete = async () => {
+    if (!selectedCategory) return;
+
+    try {
+      await deleteCategory(selectedCategory._id);
+
+      setCategories((prev) =>
+        prev.filter((c) => c._id !== selectedCategory._id),
+      );
+
+      toast.success("Category deleted");
+      onDeleteClose();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
@@ -190,11 +256,23 @@ const Categories = () => {
 
                 <Td>{new Date(c.createdAt).toLocaleDateString()}</Td>
                 <Td>
-                  <Button size="sm" colorScheme="blue" mr={2}>
+                  <Button
+                    size="sm"
+                    colorScheme="blue"
+                    mr={2}
+                    onClick={() => handleEditClick(c)}
+                  >
                     Edit
                   </Button>
 
-                  <Button size="sm" colorScheme="red">
+                  <Button
+                    size="sm"
+                    colorScheme="red"
+                    onClick={() => {
+                      setSelectedCategory(c);
+                      onDeleteOpen();
+                    }}
+                  >
                     Delete
                   </Button>
                 </Td>
@@ -203,6 +281,34 @@ const Categories = () => {
           </Tbody>
         </Table>
       </Box>
+      <AlertDialog
+        isOpen={isDeleteOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onDeleteClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Category
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to delete <b>{selectedCategory?.name}</b>?
+              This action cannot be undone.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onDeleteClose}>
+                Cancel
+              </Button>
+
+              <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 };
