@@ -13,19 +13,14 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-type FormType = {
-  title: string;
-  price: string;
-  stock: string;
-  image: string;
-};
+import type { ProductForm } from "../../types/product";
 
 interface Prop {
   isOpen: boolean;
   onClose: () => void;
-  form: FormType;
+  form: ProductForm;
   handleCreate: (e: React.FormEvent) => void;
-  setForm: React.Dispatch<React.SetStateAction<FormType>>;
+  setForm: React.Dispatch<React.SetStateAction<ProductForm>>;
 }
 
 const AddModal = ({ isOpen, onClose, form, setForm, handleCreate }: Prop) => {

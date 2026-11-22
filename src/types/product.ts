@@ -3,13 +3,27 @@ export type Rating = {
   count: number;
 };
 
+export type Category = {
+  _id: string;
+  name: string;
+};
+
+export type ProductForm = {
+  title: string;
+  price: string;
+  stock: string;
+  image: string;
+  category: string;
+};
+
 export type Product = {
   _id: string;
   title: string;
   price: number;
   stock: number;
-  category: string;
-  image: string;
+  category: Category | string | null;
+  image?: string;
+  images: string[];
   description: string;
   rating: Rating;
   createdAt: string;
@@ -41,12 +55,6 @@ export type ProductsResponse = {
     limit: number;
     total: number;
     totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-  links: {
-    next: string | null;
-    prev: string | null;
   };
 };
 

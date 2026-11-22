@@ -59,6 +59,7 @@ const Categories = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
+    _id: "",
     name: "",
     description: "",
     image: "",
@@ -97,6 +98,7 @@ const Categories = () => {
       setCategories((prev) => [data, ...prev]);
 
       setForm({
+        _id: "",
         name: "",
         description: "",
         image: "",
@@ -118,31 +120,30 @@ const Categories = () => {
       description: category.description,
       image: category.image,
     });
-    const handleUpdate = async () => {
-      try {
-        const { data } = await updateCategory(form._id, {
-          name: form.name,
-          description: form.description,
-          image: form.image,
-        });
+  };
 
-        setCategories((prev) =>
-          prev.map((c) => (c._id === data._id ? data : c)),
-        );
+  const handleUpdate = async () => {
+    try {
+      const { data } = await updateCategory(form._id, {
+        name: form.name,
+        description: form.description,
+        image: form.image,
+      });
 
-        toast.success("Category updated");
-        setIsEditMode(false);
+      setCategories((prev) => prev.map((c) => (c._id === data._id ? data : c)));
 
-        setForm({
-          _id: "",
-          name: "",
-          description: "",
-          image: "",
-        });
-      } catch (error: any) {
-        toast.error("Update failed");
-      }
-    };
+      toast.success("Category updated");
+      setIsEditMode(false);
+
+      setForm({
+        _id: "",
+        name: "",
+        description: "",
+        image: "",
+      });
+    } catch (error: any) {
+      toast.error("Update failed");
+    }
   };
   const handleDelete = async () => {
     if (!selectedCategory) return;
@@ -173,7 +174,9 @@ const Categories = () => {
     <Box>
       {/* HEADER */}
       <Flex justify="space-between" mb={6}>
-        <Heading size="md">Categories</Heading>
+        <Heading size="md">
+          {isEditMode ? "Edit Category" : "Categories"}
+        </Heading>
       </Flex>
 
       {/* ADD CATEGORY */}
@@ -199,11 +202,11 @@ const Categories = () => {
         <Button
           colorScheme="purple"
           leftIcon={<Plus size={16} />}
-          onClick={handleAddCategory}
+          onClick={isEditMode ? handleUpdate : handleAddCategory}
           isLoading={submitting}
           alignSelf="start"
         >
-          Add Category
+          {isEditMode ? "Update Category" : "Add Category"}
         </Button>
       </Flex>
 

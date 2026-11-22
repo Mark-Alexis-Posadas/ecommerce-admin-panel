@@ -1,16 +1,9 @@
 import { useState, useEffect } from "react";
-import type { Product } from "../types/product";
+import type { Product, ProductsResponse } from "../types/product";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface Meta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-}
+type Meta = ProductsResponse["meta"];
 
 interface UseProductsParams {
   search?: string;

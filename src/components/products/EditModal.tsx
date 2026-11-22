@@ -14,24 +14,13 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-type FormType = {
-  title: string;
-  price: string;
-  stock: string;
-  image: string;
-  category: string; // 🔥 added
-};
-
-type Category = {
-  _id: string;
-  name: string;
-};
+import type { Category, ProductForm } from "../../types/product";
 
 interface Prop {
   isOpen: boolean;
   onClose: () => void;
-  form: FormType;
-  setForm: React.Dispatch<React.SetStateAction<FormType>>;
+  form: ProductForm;
+  setForm: React.Dispatch<React.SetStateAction<ProductForm>>;
   handleUpdate: (e: React.MouseEvent<HTMLButtonElement>) => void;
   categories: Category[]; // 🔥 added
 }

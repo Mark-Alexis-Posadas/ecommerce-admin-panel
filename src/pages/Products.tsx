@@ -35,28 +35,7 @@ import EditModal from "../components/products/EditModal";
 import DeleteModal from "../components/products/DeleteModal";
 import useProducts from "../hooks/useProducts";
 import AddModal from "../components/products/AddModal";
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  stock: number;
-  image?: string;
-  category: string;
-  createdAt: string;
-}
-
-interface FormType {
-  title: string;
-  price: string;
-  stock: string;
-  image: string;
-  category: string;
-}
-
-interface Category {
-  _id: string;
-  name: string;
-}
+import type { Category, Product, ProductForm } from "../types/product";
 
 const Products = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -76,7 +55,6 @@ const Products = () => {
     setProducts,
     loading,
     error,
-    page,
     setPage,
     meta,
     refetch,
@@ -86,7 +64,7 @@ const Products = () => {
     category,
   });
 
-  const [form, setForm] = useState<FormType>({
+  const [form, setForm] = useState<ProductForm>({
     title: "",
     price: "",
     stock: "",
@@ -109,9 +87,9 @@ const Products = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setSearchQuery(localSearch); // Ito ang magti-trigger sa useProducts fetch
+      setSearchQuery(localSearch);
       setPage(1);
-    }, 500); // Mag-antay ng 500ms matapos tumigil ang user sa pagtype
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [localSearch]);
@@ -162,7 +140,9 @@ const Products = () => {
       price: String(product.price),
       stock: String(product.stock || 0),
       image: product.image || "",
-      category: product.category || "",
+      category: typeof product.category === "string"
+        ? product.category
+        : product.category?._id || "",
     });
   };
 
@@ -323,7 +303,6 @@ const Products = () => {
                   </Flex>
                 </Td>
 
-                {/* PRICE */}
                 <Td color="purple.500" fontWeight="semibold">
                   ₱{Number(p.price || 0).toLocaleString()}
                 </Td>
@@ -333,11 +312,12 @@ const Products = () => {
                 >
                   {p.stock}
                 </Td>
-                <Td fontWeight="bold">{p.category?.name || "No category"}</Td>
-                {/* CREATED */}
+                <Td fontWeight="bold">
+                  {typeof p.category === "object" ? p.category?.name || "No category" : "No category"}
+                </Td>
+
                 <Td>{new Date(p.createdAt).toLocaleDateString()}</Td>
 
-                {/* ACTIONS */}
                 <Td>
                   <Flex gap={2}>
                     <IconButton
@@ -366,7 +346,6 @@ const Products = () => {
           </Tbody>
         </Table>
 
-        {/* PAGINATION */}
         <Box p={4}>
           <Pagination
             currentPage={meta?.page || 1}
@@ -376,7 +355,6 @@ const Products = () => {
         </Box>
       </Box>
 
-      {/* MODAL (UNCHANGED LOGIC, Chakra style lang) */}
       {showModal && (
         <AddModal
           isOpen={showModal}
@@ -386,8 +364,6 @@ const Products = () => {
           handleCreate={handleCreate}
         />
       )}
-
-      {/* KEEP YOUR MODALS */}
 
       <ViewModal
         isOpen={activeModal === "view"}
