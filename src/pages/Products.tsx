@@ -1,3 +1,4 @@
+import {Badge} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
@@ -40,6 +41,7 @@ const empty: ProductForm = {
   isActive: true,
 };
 export default function Products() {
+  const [inventory,setInventory]=useState("all");
   const [viewed, setViewed] = useState<Product | null>(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("latest");
@@ -48,7 +50,7 @@ export default function Products() {
     "all",
   );
   const { products, loading, error, meta, page, setPage, refetch } =
-    useProducts({ search, sort, category, visibility });
+    useProducts({ search, sort, category, visibility, inventory });
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoryError, setCategoryError] = useState("");
@@ -209,7 +211,9 @@ export default function Products() {
           <option value="active">Available</option>
           <option value="archived">Archived</option>
         </Select>
+        <Select maxW="200px" aria-label="Filter inventory" value={inventory} onChange={event=>setInventory(event.target.value)}><option value="all">All inventory</option><option value="in_stock">In stock</option><option value="low_stock">Low stock</option><option value="out_of_stock">Out of stock</option></Select>
       </Flex>
+      <Text fontSize="sm" color="gray.500" mb={3}>{meta?.lowStockThreshold === 0 ? "Low-stock classification disabled." : "Low stock: 1-" + (meta?.lowStockThreshold ?? 5) + " units."} Carts do not reserve inventory.</Text>
       {categoriesLoading && <Text>Loading categories...</Text>}
       {categoryError && <Text role="alert">{categoryError}</Text>}
       {message && <Text role="status">{message}</Text>}
@@ -249,7 +253,7 @@ export default function Products() {
                     </Flex>
                   </Td>
                   <Td>₱{p.priceAfterDiscount ?? p.price}</Td>
-                  <Td>{p.stock}</Td>
+                  <Td><Text>{p.stock}</Text><Badge colorScheme={p.stock<=0?'red':p.inventoryStatus==='low_stock'?'orange':'green'}>{p.stock<=0?'Out of stock':p.inventoryStatus==='low_stock'?'Low stock':'In stock'}</Badge></Td>
                   <Td>
                     {typeof p.category === "object"
                       ? p.category?.name || "No category"

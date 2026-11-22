@@ -21,6 +21,7 @@ export type ProductForm = {
     category: string;
 };
 export type Product = {
+    inventoryStatus?: 'in_stock'|'low_stock'|'out_of_stock';
     discount?: number;
     priceAfterDiscount?: number;
     brand?: string;
@@ -57,6 +58,7 @@ export type CartResponse = {
 export type ProductsResponse = {
     data: Product[];
     meta: {
+        lowStockThreshold?:number;
         page: number;
         limit: number;
         total: number;
