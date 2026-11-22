@@ -23,3 +23,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Track shared editor tooling while keeping other local VS Code files ignored.
+!.vscode/
+!.vscode/settings.json
