@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api as axios } from "../services/api";
 import { Users as UsersIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -36,7 +36,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/users");
+        const { data } = await axios.get("/api/users");
         setUsers(data);
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Error fetching users");

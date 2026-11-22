@@ -17,7 +17,7 @@ import {
 
 import { Eye } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api as axios } from "../services/api";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -25,13 +25,13 @@ const Orders = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { user } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const fetchOrders = async () => {
-    const { data } = await axios.get("http://localhost:5000/api/orders/my", {
+    const { data } = await axios.get("/api/orders/my", {
       headers: {
-        Authorization: `Bearer ${user.token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -40,11 +40,12 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    void (async () => { try { await fetchOrders(); } catch { setLoading(false); } })();
   }, []);
   const bg = useColorModeValue("white", "gray.800");
   const tableHead = useColorModeValue("gray.100", "gray.700");
 
+  const rowBg = useColorModeValue("gray.50", "gray.700");
   if (loading) return <Spinner size="xl" />;
 
   return (
@@ -76,7 +77,7 @@ const Orders = () => {
             {orders.map((order) => (
               <Tr
                 key={order._id}
-                _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+                _hover={{ bg: rowBg }}
               >
                 <Td>#{order._id.slice(-6)}</Td>
 

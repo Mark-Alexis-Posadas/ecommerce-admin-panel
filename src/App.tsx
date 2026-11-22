@@ -16,7 +16,7 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+
 
 const App = () => {
   return (
@@ -34,14 +34,6 @@ const App = () => {
           }
         />
 
-        <Route
-          path="/signup"
-          element={
-            <AuthLayout>
-              <Signup />
-            </AuthLayout>
-          }
-        />
 
         {/* ADMIN */}
         <Route

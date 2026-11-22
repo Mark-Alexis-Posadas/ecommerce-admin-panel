@@ -77,8 +77,8 @@ const Products = () => {
       try {
         const res = await api.get("/api/products/categories");
         setCategories(res.data.data);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        console.error("Category request failed");
       }
     };
 

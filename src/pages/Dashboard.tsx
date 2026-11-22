@@ -1,3 +1,4 @@
+import { api } from "../services/api";
 import { useEffect, useState } from "react";
 import {
   SimpleGrid,
@@ -40,11 +41,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/products");
-        const data = await res.json();
+        const { data } = await api.get("/api/products");
         setStats(data.data);
-      } catch (error) {
-        console.error(error);
+      } catch {
+        console.error("Dashboard request failed");
       } finally {
         setLoading(false);
       }
