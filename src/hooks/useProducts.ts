@@ -1,74 +1,42 @@
-import { useState, useEffect } from "react";
-import type { Product, ProductsResponse } from "../types/product";
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-type Meta = ProductsResponse["meta"];
-
-interface UseProductsParams {
-  search?: string;
-  sort?: string;
-  category?: string;
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
+import type { Product, ProductsResponse } from '../types/product';
+interface Options {
+    search?: string;
+    sort?: string;
+    category?: string;
+    limit?: number;
+    featured?: boolean;
+    visibility?: 'active' | 'archived' | 'all';
 }
-
-const useProducts = ({
-  search = "",
-  sort = "",
-  category = "",
-}: UseProductsParams = {}) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [meta, setMeta] = useState<Meta | null>(null);
-
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(limit),
-        search,
-        sort,
-        category,
-      });
-
-      const res = await fetch(`${API_URL}/api/products?${params}`);
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch");
-      }
-
-      const data = await res.json();
-
-      setProducts(data.data);
-      setMeta(data.meta);
-    } catch (error) {
-      setError("Failed to fetch products");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [page, limit, search, sort, category]);
-
-  return {
-    products,
-    setProducts,
-    loading,
-    error,
-    page,
-    setPage,
-    meta,
-    refetch: fetchProducts,
-  };
-};
-
-export default useProducts;
+export default function useProducts({ search = '', sort = 'latest', category = '', limit = 10, featured, visibility = 'active' }: Options = {}) {
+    const key = JSON.stringify([search, sort, category, limit, featured, visibility]);
+    const [pagination, setPagination] = useState({ key, page: 1 });
+    const page = pagination.key === key ? pagination.page : 1;
+    const [products, setProducts] = useState<Product[]>([]);
+    const [meta, setMeta] = useState<ProductsResponse['meta'] | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [revision, setRevision] = useState(0);
+    useEffect(() => {
+        const controller = new AbortController();
+        void (async () => { await Promise.resolve(); if (controller.signal.aborted)
+            return; setLoading(true); setError(null); try {
+            const { data } = await api.get<ProductsResponse>('/api/products', { params: { page, limit, search, sort, category, visibility, ...(featured === undefined ? {} : { featured: String(featured) }) }, signal: controller.signal });
+            if (!controller.signal.aborted) {
+                setProducts(data.data);
+                setMeta(data.meta);
+            }
+        }
+        catch {
+            if (!controller.signal.aborted)
+                setError('Failed to fetch products');
+        }
+        finally {
+            if (!controller.signal.aborted)
+                setLoading(false);
+        } })();
+        return () => controller.abort();
+    }, [page, limit, search, sort, category, featured, visibility, revision]);
+    return { products, setProducts, meta, loading, error, page, setPage: (value: number) => setPagination({ key, page: value }), refetch: () => setRevision(value => value + 1) };
+}

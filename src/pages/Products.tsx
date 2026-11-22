@@ -1,19 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-} from "../services/products.services";
-import { api } from "../services/api.ts";
-import { useSearchParams } from "react-router-dom";
-import { Package, Plus, Eye, Pencil, Trash2 } from "lucide-react";
-import {
-  Input,
-  Select,
   Box,
   Flex,
   Heading,
   Button,
+  Input,
+  Select,
   Table,
   Thead,
   Tbody,
@@ -21,373 +14,288 @@ import {
   Th,
   Td,
   Image,
-  IconButton,
   Spinner,
-  Center,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-
 import toast from "react-hot-toast";
-import Pagination from "../components/ui/Pagination";
-import ViewModal from "../components/products/ViewModal";
-import EditModal from "../components/products/EditModal";
-import DeleteModal from "../components/products/DeleteModal";
+import { api } from "../services/api";
+import { catalogFailure } from "../services/catalogErrors";
+import type { Product, ProductForm, Category } from "../types/product";
 import useProducts from "../hooks/useProducts";
-import AddModal from "../components/products/AddModal";
-import type { Category, Product, ProductForm } from "../types/product";
-
-const Products = () => {
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [activeModal, setActiveModal] = useState<
-    "view" | "edit" | "delete" | null
-  >(null);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState("");
-  const [searchParams] = useSearchParams();
-  const category = searchParams.get("category") || "";
-  const [localSearch, setLocalSearch] = useState("");
+import ProductModal from "../components/products/ProductModal";
+import ViewModal from "../components/products/ViewModal";
+import Pagination from "../components/ui/Pagination";
+const empty: ProductForm = {
+  title: "",
+  description: "",
+  brand: "",
+  category: "",
+  price: "",
+  discount: "0",
+  stock: "0",
+  image: "",
+  images: "",
+  isFeatured: false,
+  isActive: true,
+};
+export default function Products() {
+  const [viewed, setViewed] = useState<Product | null>(null);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("latest");
+  const [category, setCategory] = useState("");
+  const [visibility, setVisibility] = useState<"active" | "archived" | "all">(
+    "all",
+  );
+  const { products, loading, error, meta, page, setPage, refetch } =
+    useProducts({ search, sort, category, visibility });
   const [categories, setCategories] = useState<Category[]>([]);
-  const {
-    products,
-    setProducts,
-    loading,
-    error,
-    setPage,
-    meta,
-    refetch,
-  } = useProducts({
-    search: searchQuery,
-    sort: sortOption,
-    category,
-  });
-
-  const [form, setForm] = useState<ProductForm>({
-    title: "",
-    price: "",
-    stock: "",
-    image: "",
-    category: "",
-  });
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await api.get("/api/products/categories");
-        setCategories(res.data.data);
-      } catch {
-        console.error("Category request failed");
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchQuery(localSearch);
-      setPage(1);
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [localSearch]);
-
-  const handleSort = (value: string) => {
-    setSortOption(value);
-    setPage(1);
-  };
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!form.title || !form.price) {
-      return toast.error("Title & price required");
-    }
-
-    try {
-      const { data } = await createProduct({
-        title: form.title,
-        price: Number(form.price),
-        stock: Number(form.stock) || 0,
-        image: form.image,
-        category: form.category,
-      });
-
-      setProducts((prev) => [data, ...prev]);
-      setShowModal(false);
-
-      setForm({
-        title: "",
-        price: "",
-        stock: "",
-        image: "",
-        category: "",
-      });
-
-      toast.success("Product added 🚀");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed");
-    }
-  };
-
-  const handleEdit = (product: Product) => {
-    setActiveModal("edit");
-    setSelectedProduct(product);
-    setForm({
-      title: product.title,
-      price: String(product.price),
-      stock: String(product.stock || 0),
-      image: product.image || "",
-      category: typeof product.category === "string"
-        ? product.category
-        : product.category?._id || "",
-    });
-  };
-
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!selectedProduct) return;
-
-    try {
-      const { data } = await updateProduct(selectedProduct._id, {
-        title: form.title,
-        price: Number(form.price),
-        stock: Number(form.stock),
-        image: form.image,
-        category: form.category,
-      });
-
-      setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
-
-      toast.success("Product updated ✏️");
-      await refetch();
-      closeModal();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed");
-    }
-  };
-
-  const handleView = (product: Product) => {
-    setSelectedProduct(product);
-    setActiveModal("view");
-  };
-
-  const handleDeleteClick = (product: Product) => {
-    setSelectedProduct(product);
-
-    setActiveModal("delete");
-  };
-
-  const handleDelete = async () => {
-    if (!selectedProduct) return;
-
-    try {
-      await deleteProduct(selectedProduct._id);
-
-      setProducts((prev) => prev.filter((p) => p._id !== selectedProduct._id));
-
-      toast.success("Product deleted 🗑️");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed");
-    }
-  };
-
-  const closeModal = () => {
-    setActiveModal(null);
-    setSelectedProduct(null);
-  };
-
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoryError, setCategoryError] = useState("");
+  const [selected, setSelected] = useState<Product | null>(null);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<ProductForm>(empty);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
   const bg = useColorModeValue("white", "gray.800");
-  const tableHead = useColorModeValue("gray.100", "gray.700");
-  const rowHoverBg = useColorModeValue("gray.50", "gray.700");
-
-  if (loading && products.length === 0) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
-
-  if (error) {
-    return (
-      <Center h="100vh">
-        <Text color="red.500" fontSize="lg" textAlign="center">
-          {error}
-        </Text>
-      </Center>
-    );
-  }
+  useEffect(() => {
+    let active = true;
+    api
+      .get<Category[]>("/api/categories?visibility=all")
+      .then(({ data }) => {
+        if (active) setCategories(data);
+      })
+      .catch(() => {
+        if (active)
+          setCategoryError("Could not load categories. Reload to retry.");
+      })
+      .finally(() => {
+        if (active) setCategoriesLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  const edit = (p: Product) => {
+    setSelected(p);
+    setForm({
+      title: p.title,
+      description: p.description,
+      brand: p.brand || "",
+      category:
+        typeof p.category === "string" ? p.category : p.category?._id || "",
+      price: String(p.price),
+      discount: String(p.discount || 0),
+      stock: String(p.stock),
+      image: p.image || "",
+      images: (p.images || []).join("\n"),
+      isFeatured: p.isFeatured === true,
+      isActive: p.isActive !== false,
+    });
+    setErrors({});
+    setOpen(true);
+  };
+  const save = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setErrors({});
+    try {
+      const images = form.images
+        .split("\n")
+        .map((v) => v.trim())
+        .filter(Boolean);
+      const payload = {
+        title: form.title,
+        description: form.description,
+        brand: form.brand,
+        category: form.category,
+        price: Number(form.price),
+        discount: Number(form.discount),
+        stock: Number(form.stock),
+        ...(form.image.trim() ? { image: form.image.trim() } : {}),
+        images,
+        isFeatured: form.isFeatured,
+        isActive: form.isActive,
+      };
+      if (selected) await api.put("/api/products/" + selected._id, payload);
+      else await api.post("/api/products", payload);
+      setOpen(false);
+      setMessage("Product saved");
+      toast.success("Product saved");
+      refetch();
+    } catch (e) {
+      const failure = catalogFailure(e);
+      setErrors(failure.errors || {});
+      toast.error(failure.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const archive = async (p: Product) => {
+    const restore = p.isActive === false;
+    if (!window.confirm((restore ? "Restore " : "Archive ") + p.title + "?"))
+      return;
+    setBusy(true);
+    try {
+      if (restore) await api.put("/api/products/" + p._id, { isActive: true });
+      else await api.delete("/api/products/" + p._id);
+      setMessage(restore ? "Product restored" : "Product archived");
+      toast.success(restore ? "Product restored" : "Product archived");
+      refetch();
+    } catch (e) {
+      toast.error(catalogFailure(e).message);
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <Box>
-      {/* HEADER */}
-      <Flex align="center" justify="space-between" mb={6}>
-        <Flex align="center" gap={3}>
-          <Package />
-          <Heading size="md">Products</Heading>
-        </Flex>
-
+      <Flex justify="space-between" mb={6}>
+        <Heading size="md">Products</Heading>
         <Button
-          onClick={() => setShowModal(true)}
           colorScheme="purple"
-          leftIcon={<Plus size={16} />}
+          onClick={() => {
+            setSelected(null);
+            setForm(empty);
+            setErrors({});
+            setOpen(true);
+          }}
         >
           Add Product
         </Button>
       </Flex>
-
-      <Flex mb={4} gap={4} flexWrap="wrap">
-        {/* SEARCH */}
+      <Flex gap={4} mb={4} wrap="wrap">
         <Input
-          placeholder="Search products..."
-          value={localSearch} // Gamitin ang localSearch
-          onChange={(e) => setLocalSearch(e.target.value)}
           maxW="250px"
-          bg="white"
-          _dark={{ bg: "gray.700" }}
+          placeholder="Search products..."
+          value={search}
+          maxLength={100}
+          onChange={(e) => setSearch(e.target.value)}
         />
-
-        {/* SORT */}
         <Select
-          value={sortOption}
-          onChange={(e) => handleSort(e.target.value)}
           maxW="200px"
-          bg="white"
-          _dark={{ bg: "gray.700" }}
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
         >
-          <option value="none">Sort</option>
+          <option value="latest">Newest</option>
           <option value="low_to_high">Price: Low to High</option>
           <option value="high_to_low">Price: High to Low</option>
-          <option value="latest">Latest</option>
+          <option value="top_rated">Top Rated</option>
+          <option value="best_selling">Best Selling</option>
+        </Select>
+        <Select
+          maxW="200px"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="">All categories</option>
+          {categories.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name}
+            </option>
+          ))}
+        </Select>
+        <Select
+          maxW="180px"
+          value={visibility}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "active" || value === "archived" || value === "all")
+              setVisibility(value);
+          }}
+        >
+          <option value="all">All products</option>
+          <option value="active">Available</option>
+          <option value="archived">Archived</option>
         </Select>
       </Flex>
-
-      {/* TABLE */}
-      <Box
-        bg={bg}
-        borderRadius="xl"
-        borderWidth="1px"
-        overflow="hidden"
-        shadow="sm"
-      >
-        <Table>
-          <Thead bg={tableHead}>
-            <Tr>
-              <Th>Product</Th>
-              <Th>Price</Th>
-              <Th>Stock</Th>
-              <Th>Categories</Th>
-              <Th>Created</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-
-          <Tbody>
-            {products.map((p) => (
-              <Tr key={p._id} _hover={{ bg: rowHoverBg }}>
-                {/* PRODUCT */}
-                <Td>
-                  <Flex align="center" gap={3}>
-                    {p.image && (
+      {categoriesLoading && <Text>Loading categories...</Text>}
+      {categoryError && <Text role="alert">{categoryError}</Text>}
+      {message && <Text role="status">{message}</Text>}
+      {error && (
+        <Text role="alert" color="red.500">
+          {error}
+          <Button onClick={refetch}>Retry</Button>
+        </Text>
+      )}
+      {loading ? (
+        <Spinner />
+      ) : (
+        <Box bg={bg} borderWidth="1px" borderRadius="xl" overflowX="auto">
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>Product</Th>
+                <Th>Price</Th>
+                <Th>Stock</Th>
+                <Th>Category</Th>
+                <Th>Status</Th>
+                <Th>Created</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {products.map((p) => (
+                <Tr key={p._id}>
+                  <Td>
+                    <Flex gap={3} align="center">
                       <Image
-                        src={p.image}
+                        src={p.image || p.images?.[0]}
                         boxSize="40px"
                         objectFit="cover"
-                        borderRadius="md"
                       />
-                    )}
-                    {p.title}
-                  </Flex>
-                </Td>
-
-                <Td color="purple.500" fontWeight="semibold">
-                  ₱{Number(p.price || 0).toLocaleString()}
-                </Td>
-                <Td
-                  fontWeight="bold"
-                  color={p.stock === 0 ? "red.500" : "green.500"}
-                >
-                  {p.stock}
-                </Td>
-                <Td fontWeight="bold">
-                  {typeof p.category === "object" ? p.category?.name || "No category" : "No category"}
-                </Td>
-
-                <Td>{new Date(p.createdAt).toLocaleDateString()}</Td>
-
-                <Td>
-                  <Flex gap={2}>
-                    <IconButton
-                      aria-label="view"
-                      icon={<Eye size={16} />}
-                      onClick={() => handleView(p)}
-                    />
-
-                    <IconButton
-                      aria-label="edit"
-                      icon={<Pencil size={16} />}
-                      colorScheme="yellow"
-                      onClick={() => handleEdit(p)}
-                    />
-
-                    <IconButton
-                      aria-label="delete"
-                      icon={<Trash2 size={16} />}
-                      colorScheme="red"
-                      onClick={() => handleDeleteClick(p)}
-                    />
-                  </Flex>
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-
-        <Box p={4}>
-          <Pagination
-            currentPage={meta?.page || 1}
-            totalPages={meta?.totalPages || 1}
-            onPageChange={(p) => setPage(p)}
-          />
+                      {p.title}
+                    </Flex>
+                  </Td>
+                  <Td>₱{p.priceAfterDiscount ?? p.price}</Td>
+                  <Td>{p.stock}</Td>
+                  <Td>
+                    {typeof p.category === "object"
+                      ? p.category?.name || "No category"
+                      : "No category"}
+                  </Td>
+                  <Td>{p.isActive === false ? "Archived" : "Available"}</Td>
+                  <Td>{new Date(p.createdAt).toLocaleDateString()}</Td>
+                  <Td>
+                    <Flex gap={2}>
+                      <Button size="sm" onClick={() => setViewed(p)}>View</Button>
+                      <Button size="sm" onClick={() => edit(p)}>
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        isDisabled={busy}
+                        onClick={() => archive(p)}
+                      >
+                        {p.isActive === false ? "Restore" : "Archive"}
+                      </Button>
+                    </Flex>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+          {!products.length && <Text p={6}>No products found.</Text>}
         </Box>
-      </Box>
-
-      {showModal && (
-        <AddModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          form={form}
-          setForm={setForm}
-          handleCreate={handleCreate}
-        />
       )}
-
-      <ViewModal
-        isOpen={activeModal === "view"}
-        onClose={closeModal}
-        selectedProduct={selectedProduct}
+      <Pagination
+        currentPage={page}
+        totalPages={meta?.totalPages || 1}
+        onPageChange={setPage}
       />
-
-      <EditModal
-        isOpen={activeModal === "edit"}
-        onClose={closeModal}
-        handleUpdate={handleUpdate}
+      <ProductModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
         form={form}
         setForm={setForm}
+        onSubmit={save}
+        mode={selected ? "edit" : "create"}
         categories={categories}
+        errors={errors}
+        busy={busy}
       />
-
-      <DeleteModal
-        isOpen={activeModal === "delete"}
-        onClose={closeModal}
-        handleDelete={handleDelete}
-        selectedProduct={selectedProduct}
-      />
+      <ViewModal isOpen={viewed !== null} onClose={() => setViewed(null)} selectedProduct={viewed} />
     </Box>
   );
-};
-
-export default Products;
+}
