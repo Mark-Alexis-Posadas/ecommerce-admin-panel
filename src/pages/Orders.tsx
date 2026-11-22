@@ -13,39 +13,45 @@ import {
   Spinner,
   IconButton,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
-import { Eye } from "lucide-react";
-import { useEffect, useState } from "react";
-import { api as axios } from "../services/api";
-import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { api as axios } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import type { OrderResponse } from '../types/order';
 
 const Orders = () => {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const fetchOrders = async () => {
-    const { data } = await axios.get("/api/orders/my", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setOrders(data);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    void (async () => { try { await fetchOrders(); } catch { setLoading(false); } })();
-  }, []);
-  const bg = useColorModeValue("white", "gray.800");
-  const tableHead = useColorModeValue("gray.100", "gray.700");
+    let active = true;
+    void (async () => {
+      if (!token) return;
+      try {
+        const { data } = await axios.get<OrderResponse[]>('/api/orders/my', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (active) setOrders(data);
+      } catch {
+        if (active) setOrders([]);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [token]);
+  const bg = useColorModeValue('white', 'gray.800');
+  const tableHead = useColorModeValue('gray.100', 'gray.700');
 
-  const rowBg = useColorModeValue("gray.50", "gray.700");
+  const rowBg = useColorModeValue('gray.50', 'gray.700');
   if (loading) return <Spinner size="xl" />;
 
   return (
@@ -54,13 +60,7 @@ const Orders = () => {
         📦 My Orders
       </Heading>
 
-      <Box
-        bg={bg}
-        borderRadius="xl"
-        borderWidth="1px"
-        overflow="hidden"
-        shadow="sm"
-      >
+      <Box bg={bg} borderRadius="xl" borderWidth="1px" overflow="hidden" shadow="sm">
         <Table>
           <Thead bg={tableHead}>
             <Tr>
@@ -75,21 +75,13 @@ const Orders = () => {
 
           <Tbody>
             {orders.map((order) => (
-              <Tr
-                key={order._id}
-                _hover={{ bg: rowBg }}
-              >
+              <Tr key={order._id} _hover={{ bg: rowBg }}>
                 <Td>#{order._id.slice(-6)}</Td>
 
                 <Td>
                   <Flex align="center" gap={3}>
-                    {order.orderItems.map((item: any, i: number) => (
-                      <Image
-                        key={i}
-                        src={item.image}
-                        boxSize="40px"
-                        borderRadius="md"
-                      />
+                    {order.orderItems.map((item, i) => (
+                      <Image key={i} src={item.image} boxSize="40px" borderRadius="md" />
                     ))}
                   </Flex>
                 </Td>
@@ -100,12 +92,12 @@ const Orders = () => {
 
                 <Td>
                   <Flex gap={2}>
-                    <Badge colorScheme={order.isPaid ? "green" : "yellow"}>
-                      {order.isPaid ? "Paid" : "Pending"}
+                    <Badge colorScheme={order.isPaid ? 'green' : 'yellow'}>
+                      {order.isPaid ? 'Paid' : 'Pending'}
                     </Badge>
 
-                    <Badge colorScheme={order.isDelivered ? "blue" : "gray"}>
-                      {order.isDelivered ? "Delivered" : "Not Delivered"}
+                    <Badge colorScheme={order.isDelivered ? 'blue' : 'gray'}>
+                      {order.isDelivered ? 'Delivered' : 'Not Delivered'}
                     </Badge>
                   </Flex>
                 </Td>

@@ -1,22 +1,21 @@
-import { Routes, Route } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 
-import AdminLayout from "./layouts/AdminLayout";
-import AuthLayout from "./layouts/AuthLayout";
+import AdminLayout from './layouts/AdminLayout';
+import AuthLayout from './layouts/AuthLayout';
 
-import Dashboard from "./pages/Dashboard";
-import Products from "./pages/Products";
-import Orders from "./pages/Orders";
-import Users from "./pages/Users";
+import Dashboard from './pages/Dashboard';
+import Products from './pages/Products';
+import Orders from './pages/Orders';
+import Users from './pages/Users';
 
 // ✅ NEW PAGES
-import Categories from "./pages/Categories";
-import Coupons from "./pages/Coupons";
-import Analytics from "./pages/Analytics";
-import Settings from "./pages/Settings";
+import Categories from './pages/Categories';
+import Coupons from './pages/Coupons';
+import Analytics from './pages/Analytics';
+import Settings from './pages/Settings';
 
-import Login from "./pages/Login";
-
+import Login from './pages/Login';
 
 const App = () => {
   return (
@@ -33,7 +32,6 @@ const App = () => {
             </AuthLayout>
           }
         />
-
 
         {/* ADMIN */}
         <Route

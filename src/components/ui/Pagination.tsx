@@ -1,5 +1,5 @@
-import React from "react";
-import { HStack, Button } from "@chakra-ui/react";
+import React from 'react';
+import { HStack, Button } from '@chakra-ui/react';
 
 type PaginationProps = {
   currentPage: number;
@@ -7,11 +7,7 @@ type PaginationProps = {
   onPageChange: (page: number) => void;
 };
 
-const Pagination: React.FC<PaginationProps> = ({
-  currentPage,
-  totalPages,
-  onPageChange,
-}) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
 
   return (
@@ -32,10 +28,10 @@ const Pagination: React.FC<PaginationProps> = ({
           key={page}
           size="sm"
           onClick={() => onPageChange(page)}
-          bg={currentPage === page ? "purple.500" : "transparent"}
-          color={currentPage === page ? "white" : "gray.400"}
+          bg={currentPage === page ? 'purple.500' : 'transparent'}
+          color={currentPage === page ? 'white' : 'gray.400'}
           _hover={{
-            bg: currentPage === page ? "purple.600" : "gray.100",
+            bg: currentPage === page ? 'purple.600' : 'gray.100',
           }}
           variant="outline"
         >

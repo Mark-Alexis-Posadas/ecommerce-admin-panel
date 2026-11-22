@@ -10,7 +10,7 @@ import {
   Text,
   VStack,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 interface Product {
   _id: string;
@@ -27,8 +27,8 @@ interface Prop {
 }
 
 const ViewModal = ({ isOpen, onClose, selectedProduct }: Prop) => {
-  const bg = useColorModeValue("white", "gray.800");
-  const border = useColorModeValue("gray.200", "whiteAlpha.300");
+  const bg = useColorModeValue('white', 'gray.800');
+  const border = useColorModeValue('gray.200', 'whiteAlpha.300');
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay bg="blackAlpha.600" />
@@ -59,10 +59,10 @@ const ViewModal = ({ isOpen, onClose, selectedProduct }: Prop) => {
               <b>Stock:</b> ₱{selectedProduct?.stock}
             </Text>
             <Text>
-              <b>Created:</b>{" "}
+              <b>Created:</b>{' '}
               {selectedProduct?.createdAt
                 ? new Date(selectedProduct.createdAt).toLocaleDateString()
-                : ""}
+                : ''}
             </Text>
           </VStack>
         </ModalBody>

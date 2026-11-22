@@ -10,20 +10,20 @@ npm run lint
 npm run build
 ```
 
-Formatting requires explicit paths; do not rewrite the entire application during feature work.
-Prettier 3.10.1 and eslint-config-prettier 10.1.8 are pinned. VS Code settings require the
-Prettier and ESLint editor extensions; these were not installed automatically.
+Prettier 3.10.1 and eslint-config-prettier 10.1.8 are pinned. Formatting uses the checked-in
+configuration and excludes dependencies, generated artifacts, lockfiles, environment files and
+binary assets. Use explicit changed paths during feature development. A whole-app formatting
+pass is reserved for a dedicated formatting-only cleanup, as authorized on 2026-11-22.
 
-Verified on 2026-11-22: TypeScript and build passed. Build retains a large-chunk warning.
-Whole-app format check reports 41 existing files requiring separate cleanup. Representative
-AuthLayout.tsx was formatted. ESLint/Prettier conflict check passed. Existing lint failures:
+VS Code settings require the Prettier and ESLint editor extensions; none were installed
+automatically. Code-quality rules remain enabled. TypeScript strictness is unchanged.
 
-- src/pages/Dashboard.tsx:84: explicit any.
-- src/pages/Orders.tsx:25,86: explicit any; line 44: missing fetchOrders effect dependency.
-- src/pages/Users.tsx:41: explicit any.
-- src/services/products.services.ts:14,19: explicit any.
+## Cleanup verification: 2026-11-22
 
-Total: six errors and one warning. Rules remain enabled and these files are untouched.
-No local test script exists. With the backend sibling available, run npm test there: all
-41 isolated tests passed, including frontend regressions. Report missing cross-application
-tests when using a standalone checkout.
+Full formatting check, TypeScript and ESLint pass with zero errors or warnings.
+Production build passed.
+Admin originally had six explicit-any errors and one effect-dependency warning. These are resolved through typed product writes, order responses, card props, error handling and a session-aware order effect.
+
+No local test script exists. Run npm test in the sibling ecommerce-ts-backend repository for the 45-test isolated suite, including authentication, cart, catalog and order-effect regressions. Report unavailable cross-application tests in standalone checkouts.
+
+The production build retains a large-chunk warning; bundle optimization is separate work.

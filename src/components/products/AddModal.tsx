@@ -11,9 +11,9 @@ import {
   FormControl,
   FormLabel,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
-import type { ProductForm } from "../../types/product";
+import type { ProductForm } from '../../types/product';
 
 interface Prop {
   isOpen: boolean;
@@ -24,8 +24,8 @@ interface Prop {
 }
 
 const AddModal = ({ isOpen, onClose, form, setForm, handleCreate }: Prop) => {
-  const bg = useColorModeValue("white", "gray.800");
-  const border = useColorModeValue("gray.200", "whiteAlpha.300");
+  const bg = useColorModeValue('white', 'gray.800');
+  const border = useColorModeValue('gray.200', 'whiteAlpha.300');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>

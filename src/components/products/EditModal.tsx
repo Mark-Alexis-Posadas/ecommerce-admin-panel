@@ -12,9 +12,9 @@ import {
   VStack,
   Select,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
-import type { Category, ProductForm } from "../../types/product";
+import type { Category, ProductForm } from '../../types/product';
 
 interface Prop {
   isOpen: boolean;
@@ -25,16 +25,9 @@ interface Prop {
   categories: Category[]; // 🔥 added
 }
 
-const EditModal = ({
-  isOpen,
-  onClose,
-  form,
-  setForm,
-  handleUpdate,
-  categories,
-}: Prop) => {
-  const bg = useColorModeValue("white", "gray.800");
-  const border = useColorModeValue("gray.200", "whiteAlpha.300");
+const EditModal = ({ isOpen, onClose, form, setForm, handleUpdate, categories }: Prop) => {
+  const bg = useColorModeValue('white', 'gray.800');
+  const border = useColorModeValue('gray.200', 'whiteAlpha.300');
 
   console.log(categories);
   return (

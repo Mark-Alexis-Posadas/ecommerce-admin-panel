@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { api as axios } from "../services/api";
-import { Users as UsersIcon } from "lucide-react";
-import toast from "react-hot-toast";
+import { useEffect, useState } from 'react';
+import { api as axios } from '../services/api';
+import { Users as UsersIcon } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { catalogFailure } from '../services/catalogErrors';
 
 import {
   Box,
@@ -16,7 +17,7 @@ import {
   Spinner,
   Text,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 interface User {
   _id: string;
@@ -29,17 +30,17 @@ const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const bg = useColorModeValue("white", "gray.800");
-  const headBg = useColorModeValue("gray.100", "gray.700");
-  const hoverBg = useColorModeValue("gray.50", "gray.700");
+  const bg = useColorModeValue('white', 'gray.800');
+  const headBg = useColorModeValue('gray.100', 'gray.700');
+  const hoverBg = useColorModeValue('gray.50', 'gray.700');
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await axios.get("/api/users");
+        const { data } = await axios.get('/api/users');
         setUsers(data);
-      } catch (error: any) {
-        toast.error(error.response?.data?.message || "Error fetching users");
+      } catch (error) {
+        toast.error(catalogFailure(error).message || 'Error fetching users');
       } finally {
         setLoading(false);
       }
@@ -82,9 +83,7 @@ const Users = () => {
 
                 <Td color="gray.500">{user.email}</Td>
 
-                <Td color="gray.400">
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </Td>
+                <Td color="gray.400">{new Date(user.createdAt).toLocaleDateString()}</Td>
               </Tr>
             ))}
           </Tbody>

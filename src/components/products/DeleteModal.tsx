@@ -8,7 +8,7 @@ import {
   Button,
   Text,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 interface Product {
   _id: string;
@@ -24,14 +24,9 @@ interface Prop {
   handleDelete: () => void;
 }
 
-const DeleteModal = ({
-  isOpen,
-  onClose,
-  selectedProduct,
-  handleDelete,
-}: Prop) => {
-  const bg = useColorModeValue("white", "gray.800");
-  const border = useColorModeValue("gray.200", "whiteAlpha.300");
+const DeleteModal = ({ isOpen, onClose, selectedProduct, handleDelete }: Prop) => {
+  const bg = useColorModeValue('white', 'gray.800');
+  const border = useColorModeValue('gray.200', 'whiteAlpha.300');
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay bg="blackAlpha.600" />

@@ -1,19 +1,12 @@
-import { useAuth } from "../hooks/useAuth";
-import {
-  Flex,
-  Text,
-  Button,
-  IconButton,
-  useColorMode,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { Moon, Sun } from "lucide-react";
+import { useAuth } from '../hooks/useAuth';
+import { Flex, Text, Button, IconButton, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Moon, Sun } from 'lucide-react';
 
 const Navbar = () => {
   const { logout } = useAuth();
   const { colorMode, toggleColorMode } = useColorMode();
-  const bg = useColorModeValue("white", "gray.900");
-  const border = useColorModeValue("gray.200", "whiteAlpha.200");
+  const bg = useColorModeValue('white', 'gray.900');
+  const border = useColorModeValue('gray.200', 'whiteAlpha.200');
 
   return (
     <Flex
@@ -34,10 +27,12 @@ const Navbar = () => {
         <IconButton
           aria-label="toggle theme"
           onClick={toggleColorMode}
-          icon={colorMode === "light" ? <Moon size={18} /> : <Sun size={18} />}
+          icon={colorMode === 'light' ? <Moon size={18} /> : <Sun size={18} />}
         />
 
-        <Button onClick={logout} colorScheme="purple">Logout</Button>
+        <Button onClick={logout} colorScheme="purple">
+          Logout
+        </Button>
       </Flex>
     </Flex>
   );

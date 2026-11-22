@@ -11,16 +11,16 @@ import {
   Td,
   Badge,
   useColorModeValue,
-} from "@chakra-ui/react";
-import { Plus } from "lucide-react";
+} from '@chakra-ui/react';
+import { Plus } from 'lucide-react';
 
 const Coupons = () => {
-  const bg = useColorModeValue("white", "gray.800");
-  const headBg = useColorModeValue("gray.100", "gray.700");
+  const bg = useColorModeValue('white', 'gray.800');
+  const headBg = useColorModeValue('gray.100', 'gray.700');
 
   const coupons = [
-    { code: "SALE10", discount: "10%", status: "active" },
-    { code: "WELCOME", discount: "₱50", status: "inactive" },
+    { code: 'SALE10', discount: '10%', status: 'active' },
+    { code: 'WELCOME', discount: '₱50', status: 'inactive' },
   ];
 
   return (
@@ -48,9 +48,7 @@ const Coupons = () => {
                 <Td fontWeight="bold">{c.code}</Td>
                 <Td>{c.discount}</Td>
                 <Td>
-                  <Badge colorScheme={c.status === "active" ? "green" : "gray"}>
-                    {c.status}
-                  </Badge>
+                  <Badge colorScheme={c.status === 'active' ? 'green' : 'gray'}>{c.status}</Badge>
                 </Td>
               </Tr>
             ))}

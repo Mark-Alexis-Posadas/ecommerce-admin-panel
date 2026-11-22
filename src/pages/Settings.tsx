@@ -1,14 +1,7 @@
-import {
-  Box,
-  Heading,
-  Input,
-  Button,
-  VStack,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, Heading, Input, Button, VStack, useColorModeValue } from '@chakra-ui/react';
 
 const Settings = () => {
-  const bg = useColorModeValue("white", "gray.800");
+  const bg = useColorModeValue('white', 'gray.800');
 
   return (
     <Box>

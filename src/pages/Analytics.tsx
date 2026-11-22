@@ -1,19 +1,13 @@
-import {
-  Box,
-  SimpleGrid,
-  Text,
-  Heading,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, SimpleGrid, Text, Heading, useColorModeValue } from '@chakra-ui/react';
 
 const Analytics = () => {
-  const bg = useColorModeValue("white", "gray.800");
+  const bg = useColorModeValue('white', 'gray.800');
 
   const stats = [
-    { label: "Revenue", value: "₱25,000" },
-    { label: "Orders", value: "120" },
-    { label: "Users", value: "80" },
-    { label: "Products Sold", value: "340" },
+    { label: 'Revenue', value: '₱25,000' },
+    { label: 'Orders', value: '120' },
+    { label: 'Users', value: '80' },
+    { label: 'Products Sold', value: '340' },
   ];
 
   return (

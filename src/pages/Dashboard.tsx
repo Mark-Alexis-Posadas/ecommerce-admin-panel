@@ -1,14 +1,8 @@
-import { api } from "../services/api";
-import { useEffect, useState } from "react";
-import {
-  SimpleGrid,
-  Box,
-  Text,
-  Heading,
-  Flex,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { Package, ShoppingCart, Users } from "lucide-react";
+import { api } from '../services/api';
+import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { SimpleGrid, Box, Text, Heading, Flex, useColorModeValue } from '@chakra-ui/react';
+import { Package, ShoppingCart, Users } from 'lucide-react';
 
 import {
   LineChart,
@@ -23,7 +17,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from "recharts";
+} from 'recharts';
 
 type Product = {
   _id: string;
@@ -34,17 +28,17 @@ const Dashboard = () => {
   const [stats, setStats] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const cardBg = useColorModeValue("white", "gray.800");
-  const textColor = useColorModeValue("gray.600", "gray.400");
-  const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.600', 'gray.400');
+  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await api.get("/api/products");
+        const { data } = await api.get('/api/products');
         setStats(data.data);
       } catch {
-        console.error("Dashboard request failed");
+        console.error('Dashboard request failed');
       } finally {
         setLoading(false);
       }
@@ -57,31 +51,31 @@ const Dashboard = () => {
 
   // 📊 1. Revenue (Line)
   const revenueData = [
-    { name: "Jan", revenue: 4000 },
-    { name: "Feb", revenue: 3000 },
-    { name: "Mar", revenue: 5000 },
-    { name: "Apr", revenue: 7000 },
-    { name: "May", revenue: 6000 },
+    { name: 'Jan', revenue: 4000 },
+    { name: 'Feb', revenue: 3000 },
+    { name: 'Mar', revenue: 5000 },
+    { name: 'Apr', revenue: 7000 },
+    { name: 'May', revenue: 6000 },
   ];
 
   // 📊 2. Top Products (Bar)
   const topProducts = [
-    { name: "Shoes", sales: 120 },
-    { name: "Watch", sales: 90 },
-    { name: "Bag", sales: 70 },
-    { name: "Jacket", sales: 60 },
+    { name: 'Shoes', sales: 120 },
+    { name: 'Watch', sales: 90 },
+    { name: 'Bag', sales: 70 },
+    { name: 'Jacket', sales: 60 },
   ];
 
   // 📊 3. Categories (Pie)
   const categoryData = [
-    { name: "Men", value: 400 },
-    { name: "Women", value: 300 },
-    { name: "Electronics", value: 300 },
+    { name: 'Men', value: 400 },
+    { name: 'Women', value: 300 },
+    { name: 'Electronics', value: 300 },
   ];
 
-  const COLORS = ["#7c3aed", "#06b6d4", "#22c55e"];
+  const COLORS = ['#7c3aed', '#06b6d4', '#22c55e'];
 
-  const Card = ({ label, icon }: any) => (
+  const Card = ({ label, icon }: { label: string; icon: ReactNode }) => (
     <Box
       p={6}
       borderRadius="xl"
@@ -113,26 +107,14 @@ const Dashboard = () => {
       {/* 📊 CHARTS */}
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
         {/* Category Pie */}
-        <Box
-          p={6}
-          borderRadius="xl"
-          bg={cardBg}
-          border="1px solid"
-          borderColor={borderColor}
-        >
+        <Box p={6} borderRadius="xl" bg={cardBg} border="1px solid" borderColor={borderColor}>
           <Heading size="sm" mb={4}>
             Category Distribution
           </Heading>
 
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie
-                data={categoryData}
-                dataKey="value"
-                nameKey="name"
-                outerRadius={100}
-                label
-              >
+              <Pie data={categoryData} dataKey="value" nameKey="name" outerRadius={100} label>
                 {categoryData.map((_, index) => (
                   <Cell key={index} fill={COLORS[index]} />
                 ))}
@@ -145,13 +127,7 @@ const Dashboard = () => {
         </Box>
 
         {/* Top Products Bar */}
-        <Box
-          p={6}
-          borderRadius="xl"
-          bg={cardBg}
-          border="1px solid"
-          borderColor={borderColor}
-        >
+        <Box p={6} borderRadius="xl" bg={cardBg} border="1px solid" borderColor={borderColor}>
           <Heading size="sm" mb={4}>
             Top Products
           </Heading>
@@ -172,7 +148,7 @@ const Dashboard = () => {
           bg={cardBg}
           border="1px solid"
           borderColor={borderColor}
-          gridColumn={{ md: "span 2" }}
+          gridColumn={{ md: 'span 2' }}
         >
           <Heading size="sm" mb={4}>
             Revenue Trend
@@ -183,12 +159,7 @@ const Dashboard = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                stroke="#7c3aed"
-                strokeWidth={3}
-              />
+              <Line type="monotone" dataKey="revenue" stroke="#7c3aed" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </Box>
