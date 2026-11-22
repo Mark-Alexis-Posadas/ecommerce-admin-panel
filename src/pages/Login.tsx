@@ -1,9 +1,10 @@
+import { adminLoginError } from "../services/authErrors";
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 export default function Login() {
   const { user, login, loading } = useAuth();
-  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,15 +22,17 @@ export default function Login() {
           setError("");
           try {
             await login(email, password);
-            navigate("/");
-          } catch {
-            setError("Invalid credentials or admin access required");
+
+          } catch (error) {
+            setError(adminLoginError(error));
           } finally {
             setBusy(false);
           }
         }}
       >
         <input
+          autoComplete="username"
+          aria-label="Email"
           type="email"
           required
           placeholder="Email"
@@ -38,6 +41,8 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
+          autoComplete="current-password"
+          aria-label="Password"
           type="password"
           required
           placeholder="Password"
@@ -47,6 +52,7 @@ export default function Login() {
         />
         {error && <p role="alert">{error}</p>}
         <button
+          type="submit"
           disabled={busy}
           className="mt-2 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-purple-800"
         >
